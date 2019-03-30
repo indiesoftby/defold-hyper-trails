@@ -1,0 +1,20 @@
+[bootstrap]
+main_collection = /demo/main.collectionc
+
+[script]
+shared_state = 1
+
+[display]
+width = 960
+height = 540
+
+[project]
+title = hyper_trails
+version = 1.0
+
+[library]
+include_dirs = hyper_trails
+
+[input]
+game_binding = /demo/input/game.input_bindingc
+

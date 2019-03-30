@@ -1,0 +1,29 @@
+name: "hyper_trails_stripe"
+tags: "tile"
+vertex_program: "/hyper_trails/materials/trail.vp"
+fragment_program: "/hyper_trails/materials/trail.fp"
+vertex_space: VERTEX_SPACE_LOCAL
+vertex_constants {
+  name: "view_proj"
+  type: CONSTANT_TYPE_WORLDVIEWPROJ
+  value {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.0
+  }
+}
+samplers {
+  name: "texture0"
+  wrap_u: WRAP_MODE_CLAMP_TO_EDGE
+  wrap_v: WRAP_MODE_CLAMP_TO_EDGE
+  filter_min: FILTER_MODE_MIN_NEAREST
+  filter_mag: FILTER_MODE_MAG_NEAREST
+}
+samplers {
+  name: "texture1"
+  wrap_u: WRAP_MODE_CLAMP_TO_EDGE
+  wrap_v: WRAP_MODE_CLAMP_TO_EDGE
+  filter_min: FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+}

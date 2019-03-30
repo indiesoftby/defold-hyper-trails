@@ -1,0 +1,8 @@
+mesh: "/hyper_trails/models/stripe_tiling_16.dae"
+material: "/hyper_trails/materials/trail.material"
+textures: "/hyper_trails/textures/dummy0.png"
+textures: "/hyper_trails/textures/dummy1.png"
+skeleton: ""
+animations: ""
+default_animation: ""
+name: "unnamed"

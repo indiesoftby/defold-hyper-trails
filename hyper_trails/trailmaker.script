@@ -1,0 +1,276 @@
+-- TODO
+-- * сортировать все функции по именам
+-- * разбить большие функции на мелкие
+
+local hyper_msgs = require("hyper_trails.msgs")
+local hyper_fmath = require("hyper_trails.fmath")
+local hyper_geometry = require("hyper_trails.geometry")
+
+go.property("follow_target", msg.url())
+go.property("world_position_of_target", false)
+go.property("trail_width", 20)
+go.property("trail_tint_color", vmath.vector4(1.0, 1.0, 1.0, 1.0))
+go.property("segment_height_max", 0)
+go.property("segment_height_min", 0)
+go.property("segments_count", 16)
+go.property("segments_limit", 0)
+go.property("fade_tail_alpha", false)
+go.property("shrink_tail_width", false)
+
+local function write_vectors(self, x, v1, v2)
+	local s = self._tex_stream
+
+	local i = (x - 1) * 4 + 1
+	local u = hyper_fmath.encode_rgba_float(v1.x)
+	s[i + 0] = u[1]
+	s[i + 1] = u[2]
+	s[i + 2] = u[3]
+	s[i + 3] = u[4]
+
+	i = i + self._tex_w * 4
+	u = hyper_fmath.encode_rgba_float(v1.y)
+	s[i + 0] = u[1]
+	s[i + 1] = u[2]
+	s[i + 2] = u[3]
+	s[i + 3] = u[4]
+
+	i = i + self._tex_w * 4
+	u = hyper_fmath.encode_rgba_float(v2.x)
+	s[i + 0] = u[1]
+	s[i + 1] = u[2]
+	s[i + 2] = u[3]
+	s[i + 3] = u[4]
+
+	i = i + self._tex_w * 4
+	u = hyper_fmath.encode_rgba_float(v2.y)
+	s[i + 0] = u[1]
+	s[i + 1] = u[2]
+	s[i + 2] = u[3]
+	s[i + 3] = u[4]
+end
+
+local function write_tint(self, x, tint)
+	local s = self._tex_stream
+	local y = 5
+
+	local i = (y - 1) * self._tex_w * 4 + (x - 1) * 4 + 1
+	s[i + 0] = tint.x * 255
+	s[i + 1] = tint.y * 255
+	s[i + 2] = tint.z * 255
+	s[i + 3] = tint.w * 255
+end
+
+local function apply_vector_pairs_to_segment(self, row)
+	local a = row.angle + math.pi / 2
+	local w = row.width / 2
+
+	row.v1 = vmath.vector3(math.cos(a) * w, math.sin(a) * w, 0) + row.pos
+	row.v2 = vmath.vector3(math.cos(a + math.pi) * w, math.sin(a + math.pi) * w, 0) + row.pos
+
+	if not row.new and row.prev ~= nil and row.prev.v1 ~= nil then
+		local prev = row.prev
+
+		local intersects = hyper_geometry.lines_intersects(row.v1, prev.v1, row.v2, prev.v2, false)
+		--print("---")
+		--print(row.v1)
+		--print(row.v2)
+		--print(prev.v1)
+		--print(prev.v2)
+		--print(intersecting)
+		if intersects then
+			local v = row.v2
+			row.v2 = row.v1
+			row.v1 = v
+		end
+	end
+end
+
+local function make_angle(last, to)
+	local new_angle = math.atan2(to.y - last.pos.y, to.x - last.pos.x)
+	local angle = last.angle
+
+	return new_angle
+end
+
+local function create_texture(self)
+	self._tex_buffer = buffer.create(self._tex_w * self._tex_h, { 
+		{
+			name = hash("rgba"), 
+			type = buffer.VALUE_TYPE_UINT8, 
+			count = 4
+		}
+	})
+	self._tex_stream = buffer.get_stream(self._tex_buffer, hash("rgba"))
+
+	-- for i = 1, self._data_w do
+	-- 	write_vector(self, i, 1, 0, 0)
+	-- 	write_vector(self, i, 2, 0, 0)
+	-- end
+end
+
+local function init_props(self)
+	if self.segments_limit > self.segments_count or self.segments_limit == 0 then
+		self.segments_limit = self.segments_count
+	end
+
+	if self.follow_target == msg.url() then
+		self.follow_target = nil
+	end
+end
+
+local function init_data(self)
+	self._data = {}
+
+	for i = 1, self._data_w do
+		self._data[i] = {
+			pos = vmath.vector3(),
+			angle = 0,
+			tint = vmath.vector4(self.trail_tint_color),
+			width = self.trail_width,
+			prev = self._data[i - 1],
+			new = true
+		}
+		apply_vector_pairs_to_segment(self, self._data[i])
+	end
+end
+
+local function update_texture(self)
+	resource.set_texture(self._resource_path, self._tex_header, self._tex_buffer)
+end
+
+local function encode_data_to_texture(self)
+	for i = 1, self._data_w do
+		local d = self._data[i]
+		write_vectors(self, i, d.v1, d.v2)
+		write_tint(self, i, d.tint)
+	end
+end
+
+local function follow_position(self, new_position)
+	for i = 1, self._data_w - 1 do
+		self._data[i] = self._data[i + 1]
+	end
+
+	local last = self._data[self._data_w - 1]
+	local new = {
+		pos = new_position,
+		angle = make_angle(last, new_position),
+		tint = vmath.vector4(self.trail_tint_color),
+		width = self.trail_width,
+		prev = last
+	}
+	apply_vector_pairs_to_segment(self, new)
+	self._data[self._data_w] = new
+
+	--last.angle = last.angle + (new.angle - last.angle) / 3
+	--apply_vector_pairs_to_segment(self, last)
+
+	if self.fade_tail_alpha then
+		-- for i = 1, self._data_w do
+		-- 	self._data[i].tint.w = 0.25 --+ 0.25 * (i % 2) -- i / self._data_w
+		-- end
+	end
+
+	if self.shrink_tail_width then
+		for i = 1, self._data_w do
+			self._data[i].width = self.trail_width * (i / self._data_w)
+			apply_vector_pairs_to_segment(self, self._data[i])
+		end
+	end
+
+	encode_data_to_texture(self)
+	update_texture(self)
+end
+
+local function follow_target(self)
+	local target_pos = nil
+	if self.world_position_of_target then
+		target_pos = go.get_world_position(self.follow_target)
+	else
+		target_pos = go.get_position(self.follow_target)
+	end
+
+	follow_position(self, target_pos)
+end
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+
+	self._tex_h = 8
+	self._tex_w = self.segments_count
+	self._data_w = self.segments_count
+	self._resource_path = go.get("#stripe", "texture0")
+	self._tex_header = { 
+		width = self._tex_w,
+		height = self._tex_h,
+		type = resource.TEXTURE_TYPE_2D,
+		format = resource.TEXTURE_FORMAT_RGBA,
+		num_mip_maps = 1
+	}
+
+	init_props(self)
+	create_texture(self)
+	init_data(self)
+	update_texture(self)
+
+	--follow_position(self, vmath.vector3(2 * -50,  2 * 0, 0))
+	--follow_position(self, vmath.vector3(2 * -100, 2 * 0, 0))
+	--follow_position(self, vmath.vector3(2 * -100, 2 * -50, 0))
+
+	--local v1 = vmath.vector3(100, 0, 0)
+	--local v2 = vmath.vector3(200, 0, 0)
+	--local v3 = vmath.vector3(300, 0, 0)
+	--local v4 = vmath.vector3(400, -200, 0)
+	--local a = 0
+	--local p = hyper_geometry.catmull_rom(v1, v2, v3, v4, 0)
+	--print(p)
+	--local p = hyper_geometry.catmull_rom(v1, v2, v3, v4, 0.5)
+	--print(p)
+	--local p = hyper_geometry.catmull_rom(v1, v2, v3, v4, 1)
+	--print(p)
+	
+	--follow_position(self, vmath.vector3(2 * -100, 2 * 50, 0))
+	--follow_position(self, vmath.vector3(2 * -100, 2 * 100, 0))
+	--follow_position(self, vmath.vector3(2 * -70,  2 * 100, 0))
+	--follow_position(self, vmath.vector3(2 * -50,  2 * 100, 0))
+	--follow_position(self, vmath.vector3(2 * 0,    2 * 100, 0))
+	--follow_position(self, vmath.vector3(2 * 50,   2 * 100, 0))
+	--follow_position(self, vmath.vector3(2 * 100,  2 * 100, 0))
+	--follow_position(self, vmath.vector3(2 * 100,  2 * 50, 0))
+	--follow_position(self, vmath.vector3(2 * 100,  2 * 0, 0))
+	--follow_position(self, vmath.vector3(2 * 100,  2 * -50, 0))
+	--follow_position(self, vmath.vector3(2 * 100,  2 * -100, 0))
+
+	--for i = 1, self._data_w do
+	--	print(i .. ", " .. (self._data[i].angle / math.pi * 180) .. ", " .. self._data[i].pos)
+	--end
+
+	--sys.exit(0)
+end
+
+function final(self)
+
+end
+
+function update(self, dt)
+	if self.follow_target ~= nil then
+		follow_target(self)
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hyper_msgs.FOLLOW_POSITION then
+		self.follow_target = nil
+		assert(message.position ~= nil)
+
+		follow_position(self, message.position)
+	end
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash("key_action") and action.pressed then
+		for i = 1, self._data_w do
+			print(i .. ", " .. (self._data[i].angle / math.pi * 180) .. ", " .. self._data[i].pos)
+		end
+	end
+end

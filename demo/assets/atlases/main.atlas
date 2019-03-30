@@ -1,0 +1,6 @@
+images {
+  image: "/demo/assets/images/background.png"
+}
+margin: 0
+extrude_borders: 0
+inner_padding: 0
