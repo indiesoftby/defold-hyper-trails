@@ -1,0 +1,8 @@
+mesh: "/hyper_trails/models/trail_tiling_16.dae"
+material: "/hyper_trails/materials/trail.material"
+textures: "/demo/assets/images/logo_text_texture.png"
+textures: "/hyper_trails/textures/white.png"
+skeleton: ""
+animations: ""
+default_animation: ""
+name: "unnamed"

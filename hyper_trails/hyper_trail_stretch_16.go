@@ -1,6 +1,6 @@
 components {
-  id: "stripe"
-  component: "/hyper_trails/models/stripe_tiling_16.model"
+  id: "trail_model"
+  component: "/hyper_trails/models/trail_tiling_16.model"
   position {
     x: 0.0
     y: 0.0
@@ -14,8 +14,8 @@ components {
   }
 }
 components {
-  id: "trailmaker"
-  component: "/hyper_trails/trailmaker.script"
+  id: "trail_maker"
+  component: "/hyper_trails/trail_maker.script"
   position {
     x: 0.0
     y: 0.0

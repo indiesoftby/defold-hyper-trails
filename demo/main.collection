@@ -1,9 +1,68 @@
 name: "main"
+instances {
+  id: "logo2_trail"
+  prototype: "/hyper_trails/hyper_trail_stretch_16.go"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "trail_maker"
+    properties {
+      id: "shrink_tail_width"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "logo1_trail"
+  prototype: "/hyper_trails/hyper_trail_tiling_16.go"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "trail_maker"
+    properties {
+      id: "fade_tail_alpha"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "go"
-  children: "bg"
   children: "labels"
+  children: "logo1"
+  children: "logo1_trail"
+  children: "logo2"
+  children: "logo2_trail"
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/demo/main.script\"\n"
@@ -11,6 +70,26 @@ embedded_instances {
   "    x: 0.0\n"
   "    y: 0.0\n"
   "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"bg\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"tile_set: \\\"/demo/assets/atlases/main.atlas\\\"\\n"
+  "default_animation: \\\"background\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: -1.0\n"
   "  }\n"
   "  rotation {\n"
   "    x: 0.0\n"
@@ -112,12 +191,27 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "bg"
-  data: "embedded_components {\n"
+  id: "logo1"
+  data: "components {\n"
+  "  id: \"logo1\"\n"
+  "  component: \"/demo/logo1.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
   "  id: \"sprite\"\n"
   "  type: \"sprite\"\n"
   "  data: \"tile_set: \\\"/demo/assets/atlases/main.atlas\\\"\\n"
-  "default_animation: \\\"background\\\"\\n"
+  "default_animation: \\\"logo_small\\\"\\n"
   "material: \\\"/builtins/materials/sprite.material\\\"\\n"
   "blend_mode: BLEND_MODE_ALPHA\\n"
   "\"\n"
@@ -135,8 +229,63 @@ embedded_instances {
   "}\n"
   ""
   position {
+    x: -272.0
+    y: -140.0
+    z: 0.0
+  }
+  rotation {
     x: 0.0
     y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "logo2"
+  data: "components {\n"
+  "  id: \"logo2\"\n"
+  "  component: \"/demo/logo2.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"tile_set: \\\"/demo/assets/atlases/main.atlas\\\"\\n"
+  "default_animation: \\\"logo_small\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: -44.0
+    y: -140.0
     z: 0.0
   }
   rotation {

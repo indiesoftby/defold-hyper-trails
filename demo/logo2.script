@@ -1,0 +1,28 @@
+local hyper_msgs = require("hyper_trails.msgs")
+
+go.property("_angle", 0)
+
+local function update_pos(self, reset)
+	local angle = self._angle / 180 * math.pi
+	local radius = 70
+	go.set_position(vmath.vector3(math.cos(angle), math.sin(angle), 0) * radius + self._default_pos)
+
+	local msg_hash = hyper_msgs.FOLLOW_POSITION
+	if reset then
+		msg_hash = hyper_msgs.RESET_POSITION
+	end
+	msg.post("/logo2_trail#trail_maker", msg_hash, {
+		position = go.get_position()
+	})
+end
+
+function init(self)
+	self._default_pos = go.get_position()
+
+	go.animate("#logo2", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 3)
+	update_pos(self, true)
+end
+
+function update(self, dt)
+	update_pos(self)
+end

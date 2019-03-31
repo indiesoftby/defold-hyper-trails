@@ -2,6 +2,9 @@ attribute mediump vec4 position;
 attribute mediump vec2 texcoord0;
 
 uniform mediump mat4 view_proj;
+uniform mediump vec4 pos_offset;
+uniform mediump vec4 tex_size;
+
 uniform highp sampler2D texture0;
 uniform lowp sampler2D texture1;
 
@@ -17,33 +20,23 @@ float decode_rgba_float(vec4 i)
 
 void main()
 {
-    vec4 pos = position;
-
-    //
-    float pos_x = pos.x;
-    float pos_y = pos.y;
-    float tex_height = 8.0;
-    float tex_width = 16.0;
-
     // X
-    float u = pos_x / tex_width;
-    float v1 = pos_y / tex_height;
+    float u = position.x / tex_size.x;
+    float v1 = position.y / tex_size.y;
     vec4 i1 = texture2D(texture0, vec2(u, v1));
     float x = decode_rgba_float(i1);
 
     // Y
-    float v2 = (pos_y + 1.0) / tex_height;
+    float v2 = (position.y + 1.0) / tex_size.y;
     vec4 i2 = texture2D(texture0, vec2(u, v2));
     float y = decode_rgba_float(i2);
 
     // Tint
-    float v3 = 4.0 / tex_height;
+    float v3 = 4.0 / tex_size.y;
     var_tint = texture2D(texture0, vec2(u, v3));
 
     // UV
     var_texcoord0 = texcoord0;
 
-    pos.x = x;
-    pos.y = y;
-    gl_Position = view_proj * vec4(pos.x, pos.y, pos.z, 1.0);
+    gl_Position = view_proj * vec4(pos_offset.x + x, pos_offset.y + y, position.z, 1.0);
 }
