@@ -14,8 +14,10 @@ go.property("segment_length_max", 0)
 go.property("segment_length_min", 0)
 go.property("segments_count", 16)
 go.property("segments_limit", 0)
+go.property("segments_tiling", 16)
 go.property("fade_tail_alpha", false)
 go.property("shrink_tail_width", false)
+go.property("trail_model_url", msg.url("#trail_model"))
 
 local function create_texture(self)
 	self._tex_buffer = buffer.create(self._tex_w * self._tex_h, { 
@@ -214,7 +216,7 @@ function init(self)
 	self._tex_h = 8
 	self._tex_w = self.segments_count
 	self._data_w = self.segments_count
-	self._resource_path = go.get("#trail_model", "texture0")
+	self._resource_path = go.get(self.trail_model_url, "texture0")
 	self._tex_header = { 
 		width = self._tex_w,
 		height = self._tex_h,
@@ -223,7 +225,7 @@ function init(self)
 		num_mip_maps = 1
 	}
 
-	model.set_constant("#trail_model", "tex_size", vmath.vector4(self._tex_w, self._tex_h, 0, 0))
+	model.set_constant(self.trail_model_url, "tex_size", vmath.vector4(self._tex_w, self._tex_h, 0, 0))
 
 	init_props(self)
 	create_texture(self)
