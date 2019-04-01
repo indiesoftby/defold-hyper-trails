@@ -14,7 +14,7 @@ go.property("segment_length_max", 0)
 go.property("segment_length_min", 0)
 go.property("segments_count", 16)
 go.property("segments_limit", 0)
-go.property("segments_tiling", 16)
+go.property("texture_tiling", true)
 go.property("fade_tail_alpha", false)
 go.property("shrink_tail_width", false)
 go.property("trail_model_url", msg.url("#trail_model"))
@@ -133,11 +133,19 @@ local function update_texture(self)
 	resource.set_texture(self._resource_path, self._tex_header, self._tex_buffer)
 end
 
+local function update_uv_opts(self)
+	if self.texture_tiling then
+		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(1, 0, 1, 0))
+	else
+		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, self.segments_count, 0))
+	end
+end
+
 local function encode_data_to_texture(self)
 	-- todo: расчет offset.x/y на основе всех v1/v2
 	for i = 1, self._data_w do
 		local d = self._data[i]
-		write_vectors(self, i, d.v1, d.v2)
+		write_vectors(self, i, d.v2, d.v1)
 		write_tint(self, i, d.tint)
 	end
 end
@@ -187,6 +195,7 @@ local function follow_position(self, new_position)
 
 	update_dirty_data(self)
 	encode_data_to_texture(self)
+	update_uv_opts(self)
 	update_texture(self)
 end
 
@@ -198,6 +207,7 @@ local function reset_position(self, position)
 
 	update_dirty_data(self)
 	encode_data_to_texture(self)
+	update_uv_opts(self)
 	update_texture(self)
 end
 
@@ -230,6 +240,7 @@ function init(self)
 	init_props(self)
 	create_texture(self)
 	init_data(self)
+	update_uv_opts(self)
 	update_texture(self)
 
 	if self.follow_target ~= nil then

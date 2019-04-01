@@ -19,7 +19,7 @@ end
 function init(self)
 	self._default_pos = go.get_position()
 
-	go.animate("#logo2", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 3)
+	go.animate("#logo2", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 3 / 2)
 	update_pos(self, true)
 end
 

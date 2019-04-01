@@ -21,7 +21,7 @@ function init(self)
 
 	msg.post(".", "acquire_input_focus")
 
-	go.animate("#logo1", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 3)
+	go.animate("#logo1", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 0.3)
 
 	--go.set_position(vmath.vector3(-200, -400, 0))
 	--go.animate(".", "position.x", go.PLAYBACK_LOOP_PINGPONG, 200, go.EASING_LINEAR, 4)

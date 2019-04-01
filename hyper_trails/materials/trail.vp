@@ -4,6 +4,7 @@ attribute mediump vec2 texcoord0;
 uniform mediump mat4 view_proj;
 uniform mediump vec4 pos_offset;
 uniform mediump vec4 tex_size;
+uniform mediump vec4 uv_opts;
 
 uniform highp sampler2D texture0;
 uniform lowp sampler2D texture1;
@@ -36,7 +37,7 @@ void main()
     var_tint = texture2D(texture0, vec2(u, v3));
 
     // UV
-    var_texcoord0 = texcoord0;
+    var_texcoord0 = vec2(texcoord0.x, texcoord0.y * uv_opts.x + position.x / uv_opts.z * uv_opts.y);
 
     gl_Position = view_proj * vec4(pos_offset.x + x, pos_offset.y + y, position.z, 1.0);
 }
