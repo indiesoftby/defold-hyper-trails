@@ -159,22 +159,33 @@ local function update_dirty_data(self)
 	end
 end
 
+local function last_data_points(self)
+	return self._data[self._data_w - 1], self._data[self._data_w]
+end
+
 local function follow_position(self, new_position)
-	local new = self._data[1]
+	local prev_point, last_point = last_data_points(self)
+	local lp_dist = hyper_geometry.distance(prev_point.pos, last_point.pos)
+
+	if self.segment_length_min > 0 then 
+		if lp_dist < self.segment_length_min then
+			
+		end
+	end
+
+	local new_point = self._data[1]
 	for i = 1, self._data_w - 1 do
 		self._data[i] = self._data[i + 1]
 	end
 
-	local last = self._data[self._data_w - 1]
+	new_point.pos = new_position
+	new_point.angle = make_angle(last_point, new_position)
+	new_point.tint = vmath.vector4(self.trail_tint_color)
+	new_point.width = self.trail_width
+	new_point.prev = last_point
+	new_point.dirty = true
 
-	new.pos = new_position
-	new.angle = make_angle(last, new_position)
-	new.tint = vmath.vector4(self.trail_tint_color)
-	new.width = self.trail_width
-	new.prev = last
-	new.dirty = true
-
-	self._data[self._data_w] = new
+	self._data[self._data_w] = new_point
 
 	if self.fade_tail_alpha then
 		for i = 1, self._data_w do
