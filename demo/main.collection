@@ -173,8 +173,8 @@ embedded_instances {
   "}\n"
   ""
   position {
-    x: -272.0
-    y: -140.0
+    x: -203.0
+    y: 53.0
     z: 0.0
   }
   rotation {
@@ -261,9 +261,19 @@ embedded_instances {
   "    w: 1.0\n"
   "  }\n"
   "  properties {\n"
-  "    id: \"segment_length_min\"\n"
-  "    value: \"20.0\"\n"
+  "    id: \"trail_width\"\n"
+  "    value: \"25.0\"\n"
   "    type: PROPERTY_TYPE_NUMBER\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"segment_length_min\"\n"
+  "    value: \"10.0\"\n"
+  "    type: PROPERTY_TYPE_NUMBER\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"texture_tiling\"\n"
+  "    value: \"false\"\n"
+  "    type: PROPERTY_TYPE_BOOLEAN\n"
   "  }\n"
   "  properties {\n"
   "    id: \"fade_tail_alpha\"\n"

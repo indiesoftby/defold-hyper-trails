@@ -4,7 +4,7 @@ go.property("_angle", 0)
 
 local function update_pos(self, reset)
 	local angle = self._angle / 180 * math.pi
-	local radius = 70
+	local radius = 140
 	go.set_position(vmath.vector3(math.cos(angle), math.sin(angle), 0) * radius + self._default_pos)
 
 	local msg_hash = hyper_msgs.FOLLOW_POSITION
@@ -21,7 +21,7 @@ function init(self)
 
 	msg.post(".", "acquire_input_focus")
 
-	go.animate("#logo1", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 0.3)
+	go.animate("#logo1", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 4)
 
 	--go.set_position(vmath.vector3(-200, -400, 0))
 	--go.animate(".", "position.x", go.PLAYBACK_LOOP_PINGPONG, 200, go.EASING_LINEAR, 4)
