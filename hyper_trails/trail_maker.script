@@ -160,6 +160,13 @@ local function update_dirty_data(self)
 	end
 end
 
+local function draw_trail(self)
+	update_dirty_data(self)
+	encode_data_to_texture(self)
+	update_uv_opts(self)
+	update_texture(self)
+end
+
 local function last_data_points(self)
 	return self._data[self._data_w - 1], self._data[self._data_w]
 end
@@ -210,11 +217,6 @@ local function follow_position(self, new_position)
 			self._data[i].dirty = true
 		end
 	end
-
-	update_dirty_data(self)
-	encode_data_to_texture(self)
-	update_uv_opts(self)
-	update_texture(self)
 end
 
 local function reset_position(self, position)
@@ -222,11 +224,6 @@ local function reset_position(self, position)
 		self._data[i].pos = vmath.vector3(position)
 		self._data[i].dirty = true
 	end
-
-	update_dirty_data(self)
-	encode_data_to_texture(self)
-	update_uv_opts(self)
-	update_texture(self)
 end
 
 local function follow_target(self)
@@ -269,7 +266,7 @@ function init(self)
 			target_pos = go.get_position(self.follow_target)
 		end
 
-		msg.post(".", hyper_msgs.RESET_POSITION, { position = target_pos })
+		msg.post(".", hyper_msgs.RESET_POSITION, { position = target_pos, draw = true })
 	end
 end
 
@@ -279,6 +276,7 @@ end
 function update(self, dt)
 	if self.follow_target ~= nil then
 		follow_target(self)
+		draw_trail(self)
 	end
 end
 
@@ -288,14 +286,25 @@ function on_message(self, message_id, message, sender)
 		self.follow_target = message.target
 
 		follow_target(self)
+		if message.draw then
+			draw_trail(self)
+		end
 	elseif message_id == hyper_msgs.FOLLOW_POSITION then
 		self.follow_target = nil
 		assert(message.position ~= nil)
 
 		follow_position(self, message.position)
+		if message.draw then
+			draw_trail(self)
+		end
 	elseif message_id == hyper_msgs.RESET_POSITION then
 		assert(message.position ~= nil)
 
 		reset_position(self, message.position)
+		if message.draw then
+			draw_trail(self)
+		end
+	elseif message_id == hyper_msgs.DRAW_TRAIL then
+		draw_trail(self)
 	end
 end

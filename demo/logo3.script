@@ -12,7 +12,8 @@ local function update_pos(self, reset)
 		msg_hash = hyper_msgs.RESET_POSITION
 	end
 	msg.post("/logo3_trail#trail_maker", msg_hash, {
-		position = go.get_position()
+		position = go.get_position(),
+		draw = true
 	})
 end
 
