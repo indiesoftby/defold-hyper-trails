@@ -14,14 +14,14 @@ components {
   }
   properties {
     id: "segments_count"
-    value: "32.0"
+    value: "64.0"
     type: PROPERTY_TYPE_NUMBER
   }
 }
 embedded_components {
   id: "trail_model"
   type: "model"
-  data: "mesh: \"/hyper_trails/models/trail_32.dae\"\n"
+  data: "mesh: \"/hyper_trails/models/trail_64.dae\"\n"
   "material: \"/hyper_trails/materials/trail.material\"\n"
   "textures: \"/hyper_trails/textures/texture0_1.png\"\n"
   "textures: \"/hyper_trails/textures/white.png\"\n"
