@@ -1,5 +1,7 @@
 function init(self)
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
+
+	msg.post(".", "acquire_input_focus")
 end
 
 function final(self)
@@ -7,16 +9,13 @@ function final(self)
 end
 
 function update(self, dt)
-	-- Add update code here
-	-- Remove this function if not needed
 end
 
 function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Remove this function if not needed
 end
 
 function on_input(self, action_id, action)
-	-- Add input-handling code here
-	-- Remove this function if not needed
+	if action_id == hash("profile") and action.pressed then
+		msg.post("@system:", "toggle_profile")
+	end
 end

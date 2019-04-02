@@ -1,3 +1,7 @@
+key_trigger {
+  input: KEY_1
+  action: "profile"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "click"
