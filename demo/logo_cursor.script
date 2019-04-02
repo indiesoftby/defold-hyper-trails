@@ -8,7 +8,6 @@ function final(self)
 end
 
 function update(self, dt)
-	-- update_pos(self)
 end
 
 function on_input(self, action_id, action)
