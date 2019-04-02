@@ -7,6 +7,8 @@ embedded_instances {
   children: "logo1_trail"
   children: "logo2"
   children: "logo2_trail"
+  children: "logo_cursor"
+  children: "logo_cursor_trail"
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/demo/main.script\"\n"
@@ -267,17 +269,17 @@ embedded_instances {
   "  }\n"
   "  properties {\n"
   "    id: \"segment_length_min\"\n"
-  "    value: \"10.0\"\n"
+  "    value: \"20.0\"\n"
   "    type: PROPERTY_TYPE_NUMBER\n"
-  "  }\n"
-  "  properties {\n"
-  "    id: \"texture_tiling\"\n"
-  "    value: \"false\"\n"
-  "    type: PROPERTY_TYPE_BOOLEAN\n"
   "  }\n"
   "  properties {\n"
   "    id: \"fade_tail_alpha\"\n"
   "    value: \"true\"\n"
+  "    type: PROPERTY_TYPE_BOOLEAN\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"texture_tiling\"\n"
+  "    value: \"false\"\n"
   "    type: PROPERTY_TYPE_BOOLEAN\n"
   "  }\n"
   "}\n"
@@ -351,6 +353,135 @@ embedded_instances {
   "  data: \"mesh: \\\"/hyper_trails/models/trail_16.dae\\\"\\n"
   "material: \\\"/hyper_trails/materials/trail.material\\\"\\n"
   "textures: \\\"/hyper_trails/textures/texture0_2.png\\\"\\n"
+  "textures: \\\"/hyper_trails/textures/white.png\\\"\\n"
+  "skeleton: \\\"\\\"\\n"
+  "animations: \\\"\\\"\\n"
+  "default_animation: \\\"\\\"\\n"
+  "name: \\\"unnamed\\\"\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "logo_cursor"
+  data: "components {\n"
+  "  id: \"logo_cursor\"\n"
+  "  component: \"/demo/logo_cursor.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"tile_set: \\\"/demo/assets/atlases/main.atlas\\\"\\n"
+  "default_animation: \\\"logo_small\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: -157.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "logo_cursor_trail"
+  data: "components {\n"
+  "  id: \"trail_maker\"\n"
+  "  component: \"/hyper_trails/trail_maker.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"follow_target\"\n"
+  "    value: \"/logo_cursor\"\n"
+  "    type: PROPERTY_TYPE_URL\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"segment_length_min\"\n"
+  "    value: \"5.0\"\n"
+  "    type: PROPERTY_TYPE_NUMBER\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"texture_tiling\"\n"
+  "    value: \"false\"\n"
+  "    type: PROPERTY_TYPE_BOOLEAN\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"trail_model\"\n"
+  "  type: \"model\"\n"
+  "  data: \"mesh: \\\"/hyper_trails/models/trail_16.dae\\\"\\n"
+  "material: \\\"/hyper_trails/materials/trail.material\\\"\\n"
+  "textures: \\\"/hyper_trails/textures/texture0_3.png\\\"\\n"
   "textures: \\\"/demo/assets/images/logo_text_texture.png\\\"\\n"
   "skeleton: \\\"\\\"\\n"
   "animations: \\\"\\\"\\n"
