@@ -13,7 +13,7 @@ components {
     w: 1.0
   }
   properties {
-    id: "segments_count"
+    id: "points_count"
     value: "64.0"
     type: PROPERTY_TYPE_NUMBER
   }

@@ -13,8 +13,8 @@ go.property("trail_width", 20)
 go.property("trail_tint_color", vmath.vector4(1.0, 1.0, 1.0, 1.0))
 go.property("segment_length_max", 0)
 go.property("segment_length_min", 0)
-go.property("segments_count", 16)
-go.property("segments_limit", 0)
+go.property("points_count", 16)
+go.property("points_limit", 0)
 go.property("fade_tail_alpha", false)
 go.property("shrink_tail_width", false)
 go.property("texture_tiling", true)
@@ -121,8 +121,8 @@ local function init_data(self)
 end
 
 local function init_props(self)
-	if self.segments_limit > self.segments_count or self.segments_limit == 0 then
-		self.segments_limit = self.segments_count
+	if self.points_limit > self.points_count or self.points_limit == 0 then
+		self.points_limit = self.points_count
 	end
 
 	if self.follow_target == msg.url() then
@@ -138,7 +138,7 @@ local function update_uv_opts(self)
 	if self.texture_tiling then
 		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(1, 0, 1, 0))
 	else
-		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, self.segments_count, 0))
+		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, self.points_count, 0))
 	end
 end
 
@@ -242,8 +242,8 @@ end
 
 function init(self)
 	self._tex_h = 8
-	self._tex_w = self.segments_count
-	self._data_w = self.segments_count
+	self._tex_w = self.points_count
+	self._data_w = self.points_count
 	self._resource_path = go.get(self.trail_model_url, "texture0")
 	self._tex_header = { 
 		width = self._tex_w,
