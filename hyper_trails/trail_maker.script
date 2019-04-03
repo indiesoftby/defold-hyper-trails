@@ -7,8 +7,7 @@ local hyper_fmath = require("hyper_trails.fmath")
 local hyper_geometry = require("hyper_trails.geometry")
 
 -- Note: when changing property here, don't forget to do so in apply_to_properties()
-go.property("follow_target", msg.url())
-go.property("world_position_of_target", false)
+go.property("use_world_position", false)
 go.property("wind_direction", vmath.vector3(0.0, 0.0, 0.0))
 go.property("trail_width", 20)
 go.property("trail_tint_color", vmath.vector4(1.0, 1.0, 1.0, 1.0))
@@ -22,7 +21,6 @@ go.property("texture_tiling", true)
 go.property("trail_model_url", msg.url("#trail_model"))
 
 local _props_names = {
-	"world_position_of_target",
 	"wind_direction",
 	"trail_width",
 	"trail_tint_color",
@@ -122,7 +120,7 @@ local function make_angle(last, to)
 	return new_angle
 end
 
-local function init_data(self)
+local function init_data(self, initial_pos)
 	self._data = {}
 
 	for i = 1, self._data_w do
@@ -130,7 +128,7 @@ local function init_data(self)
 		tint.w = 0
 
 		self._data[i] = {
-			pos = vmath.vector3(),
+			pos = vmath.vector3(initial_pos),
 			angle = 0,
 			tint = tint,
 			width = self.trail_width,
@@ -294,22 +292,23 @@ function init(self)
 
 	model.set_constant(self.trail_model_url, "tex_size", vmath.vector4(self._tex_w, self._tex_h, 0, 0))
 
+	local initial_pos = go.get_position()
+
 	init_props(self)
 	create_texture(self)
-	init_data(self)
+	init_data(self, initial_pos)
 	update_uv_opts(self)
 	update_texture(self)
 
-	if self.follow_target ~= nil then
-		local target_pos = nil
-		if self.world_position_of_target then
-			target_pos = go.get_world_position(self.follow_target)
-		else
-			target_pos = go.get_position(self.follow_target)
-		end
-
-		msg.post(".", hyper_msgs.RESET_POSITION, { position = target_pos, draw = true })
-	end
+	--if self.follow_target ~= nil then
+	--	local target_pos = nil
+	--	if self.world_position_of_target then
+	--		target_pos = go.get_world_position(self.follow_target)
+	--	else
+	--		target_pos = go.get_position(self.follow_target)
+	--	end
+	--	msg.post(".", hyper_msgs.RESET_POSITION, { position = target_pos, draw = true })
+	--end
 end
 
 function final(self)
