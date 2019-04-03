@@ -6,7 +6,6 @@ local hyper_msgs = require("hyper_trails.msgs")
 local hyper_fmath = require("hyper_trails.fmath")
 local hyper_geometry = require("hyper_trails.geometry")
 
--- Note: when changing property here, don't forget to do so in apply_to_properties()
 go.property("use_world_position", false)
 go.property("wind_direction", vmath.vector3(0.0, 0.0, 0.0))
 go.property("trail_width", 20)
@@ -19,26 +18,6 @@ go.property("fade_tail_alpha", false)
 go.property("shrink_tail_width", false)
 go.property("texture_tiling", true)
 go.property("trail_model_url", msg.url("#trail_model"))
-
-local _props_names = {
-	"wind_direction",
-	"trail_width",
-	"trail_tint_color",
-	"segment_length_max",
-	"segment_length_min",
-	-- "points_limit",
-	"fade_tail_alpha",
-	"shrink_tail_width",
-	"texture_tiling"
-}
-
-local function apply_to_properties(self, m)
-	for _, v in pairs(_props_names) do
-		if m[v] ~= nil then
-			self[v] = m[v]
-		end
-	end
-end
 
 local function create_texture(self)
 	self._tex_buffer = buffer.create(self._tex_w * self._tex_h, { 
@@ -133,10 +112,8 @@ local function init_data(self, initial_pos)
 			tint = tint,
 			width = self.trail_width,
 			prev = self._data[i - 1],
-			dirty = false,
-			new = true
+			dirty = true
 		}
-		apply_vector_pairs_to_segment(self, self._data[i])
 	end
 end
 
@@ -145,9 +122,9 @@ local function init_props(self)
 		self.points_limit = self.points_count
 	end
 
-	if self.follow_target == msg.url() then
-		self.follow_target = nil
-	end
+	-- if self.use_world_position then
+	-- 	self.last_world_pos = go.get_world_position()
+	-- end
 end
 
 local function update_texture(self)
@@ -163,30 +140,11 @@ local function update_uv_opts(self)
 end
 
 local function encode_data_to_texture(self)
-	-- todo: needs to be investigated, causes bugs in Windows 10
-	local min_x = nil
-	local min_y = nil
+	local local_pos = go.get_position()
+
 	for i = 1, self._data_w do
 		local d = self._data[i]
-		if i == 1 then
-			min_x = d.v1.x
-			min_y = d.v1.y
-		end
-
-		min_x = math.min(min_x, d.v1.x, d.v2.x)
-		min_y = math.min(min_y, d.v1.y, d.v2.y)
-	end
-	-- uncomment to test
-	min_x = 0 -- math.random(0, 1000)
-	min_y = 0 -- math.random(0, 1000)
-
-	local off_x = -min_x
-	local off_y = -min_y
-	model.set_constant(self.trail_model_url, "pos_offset", vmath.vector4(off_x, off_y, 0, 0))
-	
-	for i = 1, self._data_w do
-		local d = self._data[i]
-		write_vectors(self, i, off_x, off_y, d.v1, d.v2)
+		write_vectors(self, i, local_pos.x, local_pos.y, d.v1, d.v2)
 		write_tint(self, i, d.tint)
 	end
 end
@@ -232,6 +190,12 @@ local function follow_position(self, new_position)
 		end
 	end
 
+	-- if self.use_world_position then
+	-- 	local delta_pos = go.get_world_position() - self.last_world_pos
+	-- 	new_position = last_point.pos + delta_pos
+	-- 	self.last_world_pos = go.get_world_position()
+	-- end
+
 	new_point.pos = new_position
 	new_point.angle = make_angle(last_point, new_position)
 	new_point.tint = vmath.vector4(self.trail_tint_color)
@@ -266,17 +230,6 @@ local function reset_position(self, position)
 	end
 end
 
-local function follow_target(self)
-	local target_pos = nil
-	if self.world_position_of_target then
-		target_pos = go.get_world_position(self.follow_target)
-	else
-		target_pos = go.get_position(self.follow_target)
-	end
-
-	follow_position(self, target_pos)
-end
-
 function init(self)
 	self._tex_h = 8
 	self._tex_w = self.points_count
@@ -297,63 +250,20 @@ function init(self)
 	init_props(self)
 	create_texture(self)
 	init_data(self, initial_pos)
-	update_uv_opts(self)
-	update_texture(self)
-
-	--if self.follow_target ~= nil then
-	--	local target_pos = nil
-	--	if self.world_position_of_target then
-	--		target_pos = go.get_world_position(self.follow_target)
-	--	else
-	--		target_pos = go.get_position(self.follow_target)
-	--	end
-	--	msg.post(".", hyper_msgs.RESET_POSITION, { position = target_pos, draw = true })
-	--end
+	draw_trail(self)
 end
 
 function final(self)
 end
 
 function update(self, dt)
-	if self.follow_target ~= nil then
-		follow_target(self)
-		draw_trail(self)
-	end
+	follow_position(self, go.get_position())
+	draw_trail(self)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hyper_msgs.FOLLOW_TARGET then
-		assert(message.target ~= nil)
-		self.follow_target = message.target
-
-		apply_to_properties(self, message)
-
-		follow_target(self)
-		if message.draw then
-			draw_trail(self)
-		end
-	elseif message_id == hyper_msgs.FOLLOW_POSITION then
-		self.follow_target = nil
-		assert(message.position ~= nil)
-
-		apply_to_properties(self, message)
-
-		follow_position(self, message.position)
-		if message.draw then
-			draw_trail(self)
-		end
-	elseif message_id == hyper_msgs.RESET_POSITION then
-		assert(message.position ~= nil)
-
-		apply_to_properties(self, message)
-
-		reset_position(self, message.position)
-		if message.draw then
-			draw_trail(self)
-		end
-	elseif message_id == hyper_msgs.DRAW_TRAIL then
-		apply_to_properties(self, message)
-
+	if message_id == hyper_msgs.RESET_POSITION then
+		reset_position(self, go.get_position())
 		draw_trail(self)
 	end
 end

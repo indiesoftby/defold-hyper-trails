@@ -12,20 +12,12 @@ local colors = {
 	hex2rgb("FFFFFF"), hex2rgb("FFE74C"), hex2rgb("FF5964"), hex2rgb("6BF178"), hex2rgb("35A7FF")
 }
 
-local function update_pos(self, reset)
+local function update_pos(self)
 	local angle = self._angle / 180 * math.pi
 	local radius = 70
 	go.set_position(vmath.vector3(math.cos(angle), math.sin(angle), 0) * radius + self._default_pos)
 
-	local msg_hash = hyper_msgs.FOLLOW_POSITION
-	if reset then
-		msg_hash = hyper_msgs.RESET_POSITION
-	end
-	msg.post("/logo2_trail#trail_maker", msg_hash, {
-		position = go.get_position(),
-		draw = true,
-		trail_tint_color = colors[self._color % #colors + 1]
-	})
+	go.set("#trail_maker", "trail_tint_color", colors[self._color % #colors + 1])
 end
 
 function init(self)
@@ -37,7 +29,8 @@ function init(self)
 	end)
 
 	go.animate("#logo2", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 3 / 2)
-	update_pos(self, true)
+
+	update_pos(self)
 end
 
 function update(self, dt)
