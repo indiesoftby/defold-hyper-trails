@@ -6,6 +6,7 @@ local hyper_msgs = require("hyper_trails.msgs")
 local hyper_fmath = require("hyper_trails.fmath")
 local hyper_geometry = require("hyper_trails.geometry")
 
+-- Note: when changing property here, don't forget to do so in apply_to_properties()
 go.property("follow_target", msg.url())
 go.property("world_position_of_target", false)
 go.property("wind_direction", vmath.vector3(0.0, 0.0, 0.0))
@@ -19,6 +20,27 @@ go.property("fade_tail_alpha", false)
 go.property("shrink_tail_width", false)
 go.property("texture_tiling", true)
 go.property("trail_model_url", msg.url("#trail_model"))
+
+local _props_names = {
+	"world_position_of_target",
+	"wind_direction",
+	"trail_width",
+	"trail_tint_color",
+	"segment_length_max",
+	"segment_length_min",
+	-- "points_limit",
+	"fade_tail_alpha",
+	"shrink_tail_width",
+	"texture_tiling"
+}
+
+local function apply_to_properties(self, m)
+	for _, v in pairs(_props_names) do
+		if m[v] ~= nil then
+			self[v] = m[v]
+		end
+	end
+end
 
 local function create_texture(self)
 	self._tex_buffer = buffer.create(self._tex_w * self._tex_h, { 
@@ -285,6 +307,8 @@ function on_message(self, message_id, message, sender)
 		assert(message.target ~= nil)
 		self.follow_target = message.target
 
+		apply_to_properties(self, message)
+
 		follow_target(self)
 		if message.draw then
 			draw_trail(self)
@@ -293,6 +317,8 @@ function on_message(self, message_id, message, sender)
 		self.follow_target = nil
 		assert(message.position ~= nil)
 
+		apply_to_properties(self, message)
+
 		follow_position(self, message.position)
 		if message.draw then
 			draw_trail(self)
@@ -300,11 +326,15 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hyper_msgs.RESET_POSITION then
 		assert(message.position ~= nil)
 
+		apply_to_properties(self, message)
+
 		reset_position(self, message.position)
 		if message.draw then
 			draw_trail(self)
 		end
 	elseif message_id == hyper_msgs.DRAW_TRAIL then
+		apply_to_properties(self, message)
+
 		draw_trail(self)
 	end
 end

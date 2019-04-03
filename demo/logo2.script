@@ -2,6 +2,16 @@ local hyper_msgs = require("hyper_trails.msgs")
 
 go.property("_angle", 0)
 
+local function hex2rgb(hex)
+	local hex = hex:gsub("#", "")
+	local r, g, b = tonumber("0x" .. hex:sub(1,2)), tonumber("0x" .. hex:sub(3,4)), tonumber("0x" .. hex:sub(5,6))
+	return vmath.vector4(r / 255, g / 255, b / 255, 1.0)
+end
+
+local colors = {
+	hex2rgb("FFFFFF"), hex2rgb("FFE74C"), hex2rgb("FF5964"), hex2rgb("6BF178"), hex2rgb("35A7FF")
+}
+
 local function update_pos(self, reset)
 	local angle = self._angle / 180 * math.pi
 	local radius = 70
@@ -13,12 +23,18 @@ local function update_pos(self, reset)
 	end
 	msg.post("/logo2_trail#trail_maker", msg_hash, {
 		position = go.get_position(),
-		draw = true
+		draw = true,
+		trail_tint_color = colors[self._color % #colors + 1]
 	})
 end
 
 function init(self)
 	self._default_pos = go.get_position()
+	self._color = 0
+
+	timer.delay(3.0, true, function()
+		self._color = self._color + 1
+	end)
 
 	go.animate("#logo2", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 3 / 2)
 	update_pos(self, true)
