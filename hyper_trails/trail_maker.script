@@ -53,43 +53,43 @@ local function create_texture(self)
 	self._tex_stream = buffer.get_stream(self._tex_buffer, hash("rgba"))
 end
 
-local function write_vectors(self, x, v1, v2)
+local function write_vectors(self, p_x, min_x, min_y, v1, v2)
 	local s = self._tex_stream
 
-	local i = (x - 1) * 4 + 1
-	local u = hyper_fmath.encode_rgba_float(v1.x)
+	local i = (p_x - 1) * 4 + 1
+	local u = hyper_fmath.encode_rgba_float(v1.x - min_x)
 	s[i + 0] = u[1]
 	s[i + 1] = u[2]
 	s[i + 2] = u[3]
 	s[i + 3] = u[4]
 
 	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v1.y)
+	u = hyper_fmath.encode_rgba_float(v1.y - min_y)
 	s[i + 0] = u[1]
 	s[i + 1] = u[2]
 	s[i + 2] = u[3]
 	s[i + 3] = u[4]
 
 	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v2.x)
+	u = hyper_fmath.encode_rgba_float(v2.x - min_x)
 	s[i + 0] = u[1]
 	s[i + 1] = u[2]
 	s[i + 2] = u[3]
 	s[i + 3] = u[4]
 
 	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v2.y)
+	u = hyper_fmath.encode_rgba_float(v2.y - min_y)
 	s[i + 0] = u[1]
 	s[i + 1] = u[2]
 	s[i + 2] = u[3]
 	s[i + 3] = u[4]
 end
 
-local function write_tint(self, x, tint)
+local function write_tint(self, p_x, tint)
 	local s = self._tex_stream
-	local y = 5
+	local p_y = 5
 
-	local i = (y - 1) * self._tex_w * 4 + (x - 1) * 4 + 1
+	local i = (p_y - 1) * self._tex_w * 4 + (p_x - 1) * 4 + 1
 	s[i + 0] = tint.x * 255
 	s[i + 1] = tint.y * 255
 	s[i + 2] = tint.z * 255
@@ -165,10 +165,23 @@ local function update_uv_opts(self)
 end
 
 local function encode_data_to_texture(self)
-	-- todo: расчет offset.x/y на основе всех v1/v2
+	local min_x = nil
+	local min_y = nil
 	for i = 1, self._data_w do
 		local d = self._data[i]
-		write_vectors(self, i, d.v1, d.v2)
+		if i == 1 then
+			min_x = d.v1.x
+			min_y = d.v1.y
+		end
+
+		min_x = math.min(min_x, d.v1.x, d.v2.x)
+		min_y = math.min(min_y, d.v1.y, d.v2.y)
+	end
+	model.set_constant(self.trail_model_url, "pos_offset", vmath.vector4(min_x, min_y, 0, 0))
+	
+	for i = 1, self._data_w do
+		local d = self._data[i]
+		write_vectors(self, i, min_x, min_y, d.v1, d.v2)
 		write_tint(self, i, d.tint)
 	end
 end
