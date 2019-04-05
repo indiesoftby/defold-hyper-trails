@@ -7,7 +7,6 @@ local hyper_fmath = require("hyper_trails.fmath")
 local hyper_geometry = require("hyper_trails.geometry")
 
 go.property("use_world_position", false)
-go.property("wind_direction", vmath.vector3(0.0, 0.0, 0.0))
 go.property("trail_width", 20)
 go.property("trail_tint_color", vmath.vector4(1.0, 1.0, 1.0, 1.0))
 go.property("segment_length_max", 0)
@@ -19,58 +18,14 @@ go.property("shrink_tail_width", false)
 go.property("texture_tiling", true)
 go.property("trail_model_url", msg.url("#trail_model"))
 
-local function create_texture(self)
-	self._tex_buffer = buffer.create(self._tex_w * self._tex_h, { 
-		{
-			name = hash("rgba"), 
-			type = buffer.VALUE_TYPE_UINT8, 
-			count = 4
-		}
-	})
-	self._tex_stream = buffer.get_stream(self._tex_buffer, hash("rgba"))
+local function set_vector_constant(self, i, off_x, off_y, v1, v2)
+	local pos = vmath.vector4(v1.x - off_x, v1.y - off_y, v2.x - off_x, v2.y - off_y)
+
+	model.set_constant(self.trail_model_url, "pos" .. (i - 1), pos)
 end
 
-local function write_vectors(self, p_x, off_x, off_y, v1, v2)
-	local s = self._tex_stream
-
-	local i = (p_x - 1) * 4 + 1
-	local u = hyper_fmath.encode_rgba_float(v1.x - off_x)
-	s[i + 0] = u[1]
-	s[i + 1] = u[2]
-	s[i + 2] = u[3]
-	s[i + 3] = u[4]
-
-	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v1.y - off_y)
-	s[i + 0] = u[1]
-	s[i + 1] = u[2]
-	s[i + 2] = u[3]
-	s[i + 3] = u[4]
-
-	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v2.x - off_x)
-	s[i + 0] = u[1]
-	s[i + 1] = u[2]
-	s[i + 2] = u[3]
-	s[i + 3] = u[4]
-
-	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v2.y - off_y)
-	s[i + 0] = u[1]
-	s[i + 1] = u[2]
-	s[i + 2] = u[3]
-	s[i + 3] = u[4]
-end
-
-local function write_tint(self, p_x, tint)
-	local s = self._tex_stream
-	local p_y = 5
-
-	local i = (p_y - 1) * self._tex_w * 4 + (p_x - 1) * 4 + 1
-	s[i + 0] = tint.x * 255
-	s[i + 1] = tint.y * 255
-	s[i + 2] = tint.z * 255
-	s[i + 3] = tint.w * 255
+local function set_tint_constant(self, i, tint)
+	model.set_constant(self.trail_model_url, "tint" .. (i - 1), tint)
 end
 
 local function apply_vector_pairs_to_segment(self, row)
@@ -127,25 +82,21 @@ local function init_props(self)
 	-- end
 end
 
-local function update_texture(self)
-	resource.set_texture(self._resource_path, self._tex_header, self._tex_buffer)
+local function set_uv_opts_constants(self)
+	--if self.texture_tiling then
+	--	model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(1, 0, 1, 0))
+	--else
+	--	model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, self.points_count, 0))
+	--end
 end
 
-local function update_uv_opts(self)
-	if self.texture_tiling then
-		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(1, 0, 1, 0))
-	else
-		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, self.points_count, 0))
-	end
-end
-
-local function encode_data_to_texture(self)
+local function set_data_constants(self)
 	local local_pos = go.get_position()
 
 	for i = 1, self._data_w do
 		local d = self._data[i]
-		write_vectors(self, i, local_pos.x, local_pos.y, d.v1, d.v2)
-		write_tint(self, i, d.tint)
+		set_vector_constant(self, i, local_pos.x, local_pos.y, d.v1, d.v2)
+		-- set_tint_constant(self, i, d.tint)
 	end
 end
 
@@ -160,9 +111,8 @@ end
 
 local function draw_trail(self)
 	update_dirty_data(self)
-	encode_data_to_texture(self)
-	update_uv_opts(self)
-	update_texture(self)
+	set_uv_opts_constants(self)
+	set_data_constants(self)
 end
 
 local function last_data_points(self)
@@ -231,24 +181,11 @@ local function reset_position(self, position)
 end
 
 function init(self)
-	self._tex_h = 8
-	self._tex_w = self.points_count
 	self._data_w = self.points_count
-	self._resource_path = go.get(self.trail_model_url, "texture0")
-	self._tex_header = { 
-		width = self._tex_w,
-		height = self._tex_h,
-		type = resource.TEXTURE_TYPE_2D,
-		format = resource.TEXTURE_FORMAT_RGBA,
-		num_mip_maps = 1
-	}
-
-	model.set_constant(self.trail_model_url, "tex_size", vmath.vector4(self._tex_w, self._tex_h, 0, 0))
 
 	local initial_pos = go.get_position()
 
 	init_props(self)
-	create_texture(self)
 	init_data(self, initial_pos)
 	draw_trail(self)
 end

@@ -2,41 +2,100 @@ attribute mediump vec4 position;
 attribute mediump vec2 texcoord0;
 
 uniform mediump mat4 view_proj;
-uniform mediump vec4 tex_size;
-uniform mediump vec4 uv_opts;
+// uniform mediump vec4 uv_opts;
 
-uniform highp sampler2D texture0;
-uniform lowp sampler2D texture1;
+uniform lowp sampler2D texture0;
 
 varying lowp vec4 var_tint;
 varying mediump vec2 var_texcoord0;
 
-float decode_rgba_float(vec4 i)
-{
-    // return (65536.0 * i.x + 256.0 * i.y + i.z + 0.00390625 * i.w) - 32768.0;
-    float f = i.x * 255.0 * 16777216.0 + i.y * 255.0 * 65536.0 + i.z * 255.0 * 256.0 + i.w * 255.0 - 2147483648.0;
-    return f / 65536.0;
-}
+uniform highp vec4 pos0;
+uniform highp vec4 pos1;
+uniform highp vec4 pos2;
+uniform highp vec4 pos3;
+uniform highp vec4 pos4;
+uniform highp vec4 pos5;
+uniform highp vec4 pos6;
+uniform highp vec4 pos7;
+uniform highp vec4 pos8;
+uniform highp vec4 pos9;
+uniform highp vec4 pos10;
+uniform highp vec4 pos11;
+uniform highp vec4 pos12;
+uniform highp vec4 pos13;
+uniform highp vec4 pos14;
+uniform highp vec4 pos15;
+
+// uniform lowp vec4 tint0;
+// uniform lowp vec4 tint1;
+// uniform lowp vec4 tint2;
+// uniform lowp vec4 tint3;
+// uniform lowp vec4 tint4;
+// uniform lowp vec4 tint5;
+// uniform lowp vec4 tint6;
+// uniform lowp vec4 tint7;
+// uniform lowp vec4 tint8;
+// uniform lowp vec4 tint9;
+// uniform lowp vec4 tint10;
+// uniform lowp vec4 tint11;
+// uniform lowp vec4 tint12;
+// uniform lowp vec4 tint13;
+// uniform lowp vec4 tint14;
+// uniform lowp vec4 tint15;
 
 void main()
 {
+    highp vec4 arr_pos[16];
+    // lowp vec4 arr_tint[16];
+
+    arr_pos[0] = pos0;
+    arr_pos[1] = pos1;
+    arr_pos[2] = pos2;
+    arr_pos[3] = pos3;
+    arr_pos[4] = pos4;
+    arr_pos[5] = pos5;
+    arr_pos[6] = pos6;
+    arr_pos[7] = pos7;
+    arr_pos[8] = pos8;
+    arr_pos[9] = pos9;
+    arr_pos[10] = pos10;
+    arr_pos[11] = pos11;
+    arr_pos[12] = pos12;
+    arr_pos[13] = pos13;
+    arr_pos[14] = pos14;
+    arr_pos[15] = pos15;
+
+    // arr_tint[0] = tint0;
+    // arr_tint[1] = tint1;
+    // arr_tint[2] = tint2;
+    // arr_tint[3] = tint3;
+    // arr_tint[4] = tint4;
+    // arr_tint[5] = tint5;
+    // arr_tint[6] = tint6;
+    // arr_tint[7] = tint7;
+    // arr_tint[8] = tint8;
+    // arr_tint[9] = tint9;
+    // arr_tint[10] = tint10;
+    // arr_tint[11] = tint11;
+    // arr_tint[12] = tint12;
+    // arr_tint[13] = tint13;
+    // arr_tint[14] = tint14;
+    // arr_tint[15] = tint15;
+
     // X
-    float u = position.x / tex_size.x;
-    float v1 = position.y / tex_size.y;
-    vec4 i1 = texture2D(texture0, vec2(u, v1));
-    float x = decode_rgba_float(i1);
+    int i = int(position.x + 0.05);
+    int j1 = int(position.y + 0.05);
+    float x = arr_pos[i][j1];
 
     // Y
-    float v2 = (position.y + 1.0) / tex_size.y;
-    vec4 i2 = texture2D(texture0, vec2(u, v2));
-    float y = decode_rgba_float(i2);
+    int j2 = int(position.y + 1.05);
+    float y = arr_pos[i][j2];
 
     // Tint
-    float v3 = 4.0 / tex_size.y;
-    var_tint = texture2D(texture0, vec2(u, v3));
+    var_tint = vec4(1.0, 1.0, 1.0, 1.0);// arr_tint[i];
 
     // UV
-    var_texcoord0 = vec2(texcoord0.x, texcoord0.y * uv_opts.x + position.x / uv_opts.z * uv_opts.y);
+    var_texcoord0 = vec2(texcoord0.x, texcoord0.y);// * uv_opts.x + position.x / uv_opts.z * uv_opts.y);
 
     gl_Position = view_proj * vec4(x, y, position.z, 1.0);
 }
