@@ -1,22 +1,17 @@
 local hyper_msgs = require("hyper_trails.msgs")
 
-go.property("_angle", 0)
+go.property("_tween", 50)
 
 local function update_pos(self)
-	local angle = self._angle / 180 * math.pi
-	local radius = 140
-	go.set_position(vmath.vector3(math.cos(angle), math.sin(angle), 0) * radius + self._default_pos)
+	go.set_position(vmath.vector3(self._tween, 0, 0) + self._default_pos)
 end
 
 function init(self)
 	self._default_pos = go.get_position()
 
-	go.animate("#logo1", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 6)
+	go.animate("#logo1", "_tween", go.PLAYBACK_LOOP_PINGPONG, -self._tween, go.EASING_INOUTQUAD, 3)
 
 	update_pos(self)
-end
-
-function final(self)
 end
 
 function update(self, dt)

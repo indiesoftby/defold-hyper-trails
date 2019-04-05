@@ -1,0 +1,24 @@
+local hyper_msgs = require("hyper_trails.msgs")
+
+go.property("_angle", 0)
+
+local function update_pos(self)
+	local angle = self._angle / 180 * math.pi
+	local radius = 50
+	go.set_position(vmath.vector3(math.cos(angle), math.sin(angle), 0) * radius + self._default_pos)
+end
+
+function init(self)
+	self._default_pos = go.get_position()
+
+	go.animate("#moon", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 1)
+
+	update_pos(self)
+end
+
+function final(self)
+end
+
+function update(self, dt)
+	update_pos(self)
+end
