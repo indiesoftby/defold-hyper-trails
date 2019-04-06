@@ -118,6 +118,8 @@ local function init_data(self, initial_pos)
 end
 
 local function init_props(self)
+	assert(bit.band(self.points_count, (self.points_count - 1)) == 0, "Points count should be 16, 32, 64 (power of two).")
+
 	if self.points_limit > self.points_count or self.points_limit == 0 then
 		self.points_limit = self.points_count
 	end
