@@ -3,10 +3,10 @@ scale_along_z: 0
 embedded_instances {
   id: "go"
   children: "labels"
-  children: "logo1"
-  children: "logo2"
-  children: "logo3"
   children: "logo_cursor"
+  children: "logo_hyper"
+  children: "logo_local"
+  children: "logo_long"
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/demo/main.script\"\n"
@@ -299,10 +299,10 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "logo2"
+  id: "logo_long"
   data: "components {\n"
-  "  id: \"logo2\"\n"
-  "  component: \"/demo/logo2.script\"\n"
+  "  id: \"logo_long\"\n"
+  "  component: \"/demo/logo_long.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -439,8 +439,13 @@ embedded_instances {
   "    type: PROPERTY_TYPE_BOOLEAN\n"
   "  }\n"
   "  properties {\n"
+  "    id: \"trail_width\"\n"
+  "    value: \"24.0\"\n"
+  "    type: PROPERTY_TYPE_NUMBER\n"
+  "  }\n"
+  "  properties {\n"
   "    id: \"segment_length_min\"\n"
-  "    value: \"4.0\"\n"
+  "    value: \"5.0\"\n"
   "    type: PROPERTY_TYPE_NUMBER\n"
   "  }\n"
   "  properties {\n"
@@ -512,10 +517,10 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "logo3"
+  id: "logo_hyper"
   data: "components {\n"
-  "  id: \"logo3\"\n"
-  "  component: \"/demo/logo3.script\"\n"
+  "  id: \"logo_hyper\"\n"
+  "  component: \"/demo/logo_hyper.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -621,11 +626,11 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "logo1"
-  children: "logo1_moon"
+  id: "logo_local"
+  children: "logo_local_moon"
   data: "components {\n"
-  "  id: \"logo1\"\n"
-  "  component: \"/demo/logo1.script\"\n"
+  "  id: \"logo_local\"\n"
+  "  component: \"/demo/logo_local.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -677,7 +682,7 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "logo1_moon"
+  id: "logo_local_moon"
   data: "components {\n"
   "  id: \"moon\"\n"
   "  component: \"/demo/moon.script\"\n"

@@ -28,7 +28,7 @@ function init(self)
 		self._color = self._color + 1
 	end)
 
-	go.animate("#logo2", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 3 / 2)
+	go.animate("#logo_long", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 3 / 2)
 
 	update_pos(self)
 end
