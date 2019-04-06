@@ -30,32 +30,32 @@ local function create_texture(self)
 	self._tex_stream = buffer.get_stream(self._tex_buffer, hash("rgba"))
 end
 
-local function write_vectors(self, p_x, off_x, off_y, v1, v2)
+local function write_vectors(self, p_x, v_1, v_2)
 	local s = self._tex_stream
 
 	local i = (p_x - 1) * 4 + 1
-	local u = hyper_fmath.encode_rgba_float(v1.x - off_x)
+	local u = hyper_fmath.encode_rgba_float(v_1.x)
 	s[i + 0] = u[1]
 	s[i + 1] = u[2]
 	s[i + 2] = u[3]
 	s[i + 3] = u[4]
 
 	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v1.y - off_y)
+	u = hyper_fmath.encode_rgba_float(v_1.y)
 	s[i + 0] = u[1]
 	s[i + 1] = u[2]
 	s[i + 2] = u[3]
 	s[i + 3] = u[4]
 
 	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v2.x - off_x)
+	u = hyper_fmath.encode_rgba_float(v_2.x)
 	s[i + 0] = u[1]
 	s[i + 1] = u[2]
 	s[i + 2] = u[3]
 	s[i + 3] = u[4]
 
 	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v2.y - off_y)
+	u = hyper_fmath.encode_rgba_float(v_2.y)
 	s[i + 0] = u[1]
 	s[i + 1] = u[2]
 	s[i + 2] = u[3]
@@ -73,33 +73,29 @@ local function write_tint(self, p_x, tint)
 	s[i + 3] = tint.w * 255
 end
 
-local function apply_vector_pairs_to_segment(self, row)
+local function make_vectors_from_angle(self, row)
 	local a = row.angle - math.pi / 2
 	local w = row.width / 2
 
-	row.v1 = vmath.vector3(math.cos(a) * w, math.sin(a) * w, 0) + row.pos
-	row.v2 = vmath.vector3(math.cos(a + math.pi) * w, math.sin(a + math.pi) * w, 0) + row.pos
+	row.v_1 = vmath.vector3(math.cos(a) * w, math.sin(a) * w, 0)
+	row.v_2 = vmath.vector3(math.cos(a + math.pi) * w, math.sin(a + math.pi) * w, 0)
 
-	if not row.new and row.prev ~= nil and row.prev.v1 ~= nil then
-		local prev = row.prev
-
-		local intersects = hyper_geometry.lines_intersects(row.v1, prev.v1, row.v2, prev.v2, false)
-		if intersects then
-			local v = row.v2
-			row.v2 = row.v1
-			row.v1 = v
-		end
-	end
+	-- if not row.new and row.prev ~= nil and row.prev.v1 ~= nil then
+	-- 	local prev = row.prev
+	-- 	local intersects = hyper_geometry.lines_intersects(row.v1, prev.v1, row.v2, prev.v2, false)
+	-- 	if intersects then
+	-- 		local v = row.v2
+	-- 		row.v2 = row.v1
+	-- 		row.v1 = v
+	-- 	end
+	-- end
 end
 
-local function make_angle(last, to)
-	local new_angle = math.atan2(to.y - last.pos.y, to.x - last.pos.x)
-	local angle = last.angle
-
-	return new_angle
+local function make_angle(diff_pos)
+	return math.atan2(-diff_pos.y, -diff_pos.x)
 end
 
-local function init_data(self, initial_pos)
+local function init_data(self)
 	self._data = {}
 
 	for i = 1, self._data_w do
@@ -107,13 +103,25 @@ local function init_data(self, initial_pos)
 		tint.w = 0
 
 		self._data[i] = {
-			pos = vmath.vector3(initial_pos),
-			angle = 0,
-			tint = tint,
-			width = self.trail_width,
-			prev = self._data[i - 1],
-			dirty = true
+			dpos = vmath.vector3(), -- vector3
+			angle = 0, -- radians
+			tint = tint, -- vector4
+			width = self.trail_width, -- trail width
+			prev = self._data[i - 1] -- link to the previous point
 		}
+		make_vectors_from_angle(self, self._data[i])
+	end
+end
+
+local function get_position(self)
+	if self.use_world_position then
+		local pos = go.get_world_position()
+		local scale = go.get_world_scale()
+		pos.x = pos.x / scale.x
+		pos.y = pos.y / scale.y
+		return pos
+	else
+		return go.get_position()
 	end
 end
 
@@ -124,9 +132,7 @@ local function init_props(self)
 		self.points_limit = self.points_count
 	end
 
-	-- if self.use_world_position then
-	-- 	self.last_world_pos = go.get_world_position()
-	-- end
+	self._last_pos = get_position(self)
 end
 
 local function update_texture(self)
@@ -142,22 +148,25 @@ local function update_uv_opts(self)
 end
 
 local function encode_data_to_texture(self)
-	local local_pos = go.get_position()
+	local p = vmath.vector3()
 
-	for i = 1, self._data_w do
+	for i = self._data_w, 1, -1 do
 		local d = self._data[i]
-		write_vectors(self, i, local_pos.x, local_pos.y, d.v1, d.v2)
+
+		write_vectors(self, i, p + d.v_1, p + d.v_2)
 		write_tint(self, i, d.tint)
+
+		p = p + d.dpos
 	end
 end
 
 local function update_dirty_data(self)
-	for i = 1, self._data_w do
-		if self._data[i].dirty then
-			apply_vector_pairs_to_segment(self, self._data[i])
-			self._data[i].dirty = false
-		end
-	end
+	--for i = 1, self._data_w do
+	--	if self._data[i].dirty then
+	--		make_vectors_from_angle(self, self._data[i])
+	--		self._data[i].dirty = false
+	--	end
+	--end
 end
 
 local function draw_trail(self)
@@ -171,39 +180,37 @@ local function last_data_points(self)
 	return self._data[self._data_w - 1], self._data[self._data_w]
 end
 
-local function follow_position(self, new_position)
+local function follow_position(self)
+	local cur_pos = get_position(self)
+	local diff_pos = self._last_pos - cur_pos
+	self._last_pos = cur_pos
+
 	local prev_point, last_point = last_data_points(self)
-	local lp_dist = hyper_geometry.distance(prev_point.pos, last_point.pos)
+	--local lp_dist = hyper_geometry.distance(prev_point.pos, last_point.pos)
 
 	local new_point = nil
-	local add_new_p = true
-	if self.segment_length_min > 0 then 
-		if lp_dist < self.segment_length_min then
-			add_new_p = false
-			new_point = last_point
-			last_point = prev_point
-		end
-	end
+	--local add_new_p = true
+	--if self.segment_length_min > 0 then 
+	--	if lp_dist < self.segment_length_min then
+	--		add_new_p = false
+	--		new_point = last_point
+	--		last_point = prev_point
+	--	end
+	--end
 
-	if add_new_p then
+	--if add_new_p then
 		new_point = self._data[1]
 		for i = 1, self._data_w - 1 do
 			self._data[i] = self._data[i + 1]
 		end
-	end
+	--end
 
-	-- if self.use_world_position then
-	-- 	local delta_pos = go.get_world_position() - self.last_world_pos
-	-- 	new_position = last_point.pos + delta_pos
-	-- 	self.last_world_pos = go.get_world_position()
-	-- end
-
-	new_point.pos = new_position
-	new_point.angle = make_angle(last_point, new_position)
+	new_point.dpos = diff_pos
+	new_point.angle = make_angle(diff_pos)
 	new_point.tint = vmath.vector4(self.trail_tint_color)
 	new_point.width = self.trail_width
 	new_point.prev = last_point
-	new_point.dirty = true
+	make_vectors_from_angle(self, new_point)
 
 	self._data[self._data_w] = new_point
 
@@ -212,7 +219,7 @@ local function follow_position(self, new_position)
 			local w = (i - 1) / (self._data_w - 1)
 			if self._data[i].tint.w > w then
 				self._data[i].tint.w = w
-				self._data[i].dirty = true
+				-- self._data[i].dirty = true
 			end
 		end
 	end
@@ -220,17 +227,18 @@ local function follow_position(self, new_position)
 	if self.shrink_tail_width then
 		for i = 1, self._data_w do
 			self._data[i].width = self.trail_width * (i / self._data_w)
-			self._data[i].dirty = true
+			make_vectors_from_angle(self, self._data[i])
+			-- self._data[i].dirty = true
 		end
 	end
 end
 
-local function reset_position(self, position)
-	for i = 1, self._data_w do
-		self._data[i].pos = vmath.vector3(position)
-		self._data[i].dirty = true
-	end
-end
+--local function reset_position(self, position)
+--	for i = 1, self._data_w do
+--		self._data[i].pos = vmath.vector3(position)
+--		self._data[i].dirty = true
+--	end
+--end
 
 function init(self)
 	self._tex_h = 8
@@ -247,11 +255,9 @@ function init(self)
 
 	model.set_constant(self.trail_model_url, "tex_size", vmath.vector4(self._tex_w, self._tex_h, 0, 0))
 
-	local initial_pos = go.get_position()
-
 	init_props(self)
 	create_texture(self)
-	init_data(self, initial_pos)
+	init_data(self)
 	draw_trail(self)
 end
 
@@ -259,13 +265,13 @@ function final(self)
 end
 
 function update(self, dt)
-	follow_position(self, go.get_position())
+	follow_position(self)
 	draw_trail(self)
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hyper_msgs.RESET_POSITION then
-		reset_position(self, go.get_position())
-		draw_trail(self)
+		--reset_position(self, go.get_position())
+		--draw_trail(self)
 	end
 end

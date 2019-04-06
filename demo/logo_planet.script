@@ -9,7 +9,7 @@ end
 function init(self)
 	self._default_pos = go.get_position()
 
-	go.animate("#logo_local", "_tween", go.PLAYBACK_LOOP_PINGPONG, -self._tween, go.EASING_INOUTQUAD, 3)
+	go.animate("#logo_planet", "_tween", go.PLAYBACK_LOOP_PINGPONG, -self._tween, go.EASING_INOUTQUAD, 3)
 
 	update_pos(self)
 end

@@ -1,6 +1,6 @@
 local hyper_msgs = require("hyper_trails.msgs")
 
-go.property("_angle", 0)
+go.property("_angle", 90)
 
 local function update_pos(self)
 	local angle = self._angle / 180 * math.pi
@@ -11,7 +11,7 @@ end
 function init(self)
 	self._default_pos = go.get_position()
 
-	go.animate("#moon", "_angle", go.PLAYBACK_LOOP_FORWARD, -360, go.EASING_LINEAR, 1)
+	go.animate("#moon", "_angle", go.PLAYBACK_LOOP_FORWARD, -360 + self._angle, go.EASING_LINEAR, 1)
 
 	update_pos(self)
 end
