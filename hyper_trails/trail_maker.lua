@@ -195,15 +195,16 @@ function M.make_vectors_from_angle(self, row)
 	row.v_1 = vmath.vector3(math.cos(a) * w, math.sin(a) * w, 0)
 	row.v_2 = vmath.vector3(math.cos(a + math.pi) * w, math.sin(a + math.pi) * w, 0)
 
-	-- if not row.new and row.prev ~= nil and row.prev.v1 ~= nil then
-	-- 	local prev = row.prev
-	-- 	local intersects = hyper_geometry.lines_intersects(row.v1, prev.v1, row.v2, prev.v2, false)
-	-- 	if intersects then
-	-- 		local v = row.v2
-	-- 		row.v2 = row.v1
-	-- 		row.v1 = v
-	-- 	end
-	-- end
+	-- Trying to prevent crossing the points
+	if row.prev ~= nil and row.prev.v1 ~= nil then
+		local prev = row.prev
+		local intersects = hyper_geometry.lines_intersects(row.v_1, prev.v_1 + row.dpos, row.v_2, prev.v_2 + row.dpos, false)
+		if intersects then
+			local v = row.v_2
+			row.v_2 = row.v_1
+			row.v_1 = v
+		end
+	end
 end
 
 --function M.reset_position(self, position)
