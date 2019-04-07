@@ -39,6 +39,18 @@ function M.encode_data_to_texture(self)
 	end
 end
 
+function M.fade_tail(self, dt, data_arr, data_from)
+	local m = math.min(data_from + self.fade_tail_alpha - 1, self._data_w)
+	local j = 0
+	for i = data_from, m do
+		local w = j / (m - data_from)
+		if data_arr[i].tint.w > w then
+			data_arr[i].tint.w = w
+		end
+		j = j + 1
+	end
+end
+
 function M.follow_position(self, dt)
 	local data_arr = self._data
 
@@ -88,25 +100,16 @@ function M.follow_position(self, dt)
 	end
 	local data_from = self._data_w - data_limit + 1
 
+	if self.shrink_length_per_sec > 0 then
+		M.shrink_length(self, dt, data_arr, data_from)
+	end
+
 	if self.fade_tail_alpha > 0 then
-		local m = math.min(data_from + self.fade_tail_alpha - 1, self._data_w)
-		local j = 0
-		for i = data_from, m do
-			local w = j / (m - data_from)
-			if data_arr[i].tint.w > w then
-				data_arr[i].tint.w = w
-			end
-			j = j + 1
-		end
+		M.fade_tail(self, dt, data_arr, data_from)
 	end
 
 	if self.shrink_tail_width then
-		local j = 1
-		for i = data_from, self._data_w do
-			data_arr[i].width = self.trail_width * (j / data_limit)
-			M.make_vectors_from_angle(self, data_arr[i])
-			j = j + 1
-		end
+		M.shrink_width(self, dt, data_from, data_arr, data_limit)
 	end
 
 	local last_point = data_arr[data_from]
@@ -116,6 +119,7 @@ function M.follow_position(self, dt)
 		local d = data_arr[i]
 		d.dpos.x = 0
 		d.dpos.y = 0
+		d.dlength = 0
 		d.width = 0
 		d.tint.w = 0
 		M.make_vectors_from_angle(self, d)
@@ -213,6 +217,34 @@ end
 --		self._data[i].dirty = true
 --	end
 --end
+
+function M.shrink_length(self, dt, data_arr, data_from)
+	local to_shrink = self.shrink_length_per_sec * dt
+	for i = data_from + 1, self._data_w - 1 do
+		local d = data_arr[i]
+		if d.dlength ~= 0 then
+			if d.dlength > to_shrink then
+				d.dlength = d.dlength - to_shrink
+				d.dpos = vmath.normalize(d.dpos) * d.dlength
+				break
+			else
+				to_shrink = to_shrink - d.dlength
+				d.dpos.x = 0
+				d.dpos.y = 0
+				d.dlength = 0
+			end
+		end
+	end
+end
+
+function M.shrink_width(self, dt, data_from, data_arr, data_limit)
+	local j = 1
+	for i = data_from, self._data_w do
+		data_arr[i].width = self.trail_width * (j / data_limit)
+		M.make_vectors_from_angle(self, data_arr[i])
+		j = j + 1
+	end
+end
 
 function M.update_texture(self)
 	resource.set_texture(self._resource_path, self._tex_header, self._tex_buffer)

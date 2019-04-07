@@ -12,6 +12,7 @@ go.property("points_limit", 0) -- todo
 go.property("fade_tail_alpha", 0)
 go.property("fade_time_sec", 0)
 go.property("shrink_tail_width", false)
+go.property("shrink_length_per_sec", 0)
 go.property("texture_tiling", true)
 go.property("trail_model_url", msg.url("#trail_model"))
 
