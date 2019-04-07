@@ -112,17 +112,8 @@ function M.follow_position(self, dt)
 		M.shrink_width(self, dt, data_from, data_arr, data_limit)
 	end
 
-	local last_point = data_arr[data_from]
-	last_point.dpos.x = 0
-	last_point.dpos.y = 0
-	for i = 1, data_from - 1 do
-		local d = data_arr[i]
-		d.dpos.x = 0
-		d.dpos.y = 0
-		d.dlength = 0
-		d.width = 0
-		d.tint.w = 0
-		M.make_vectors_from_angle(self, d)
+	if data_from > 1 then
+		M.pull_not_used_points(self, data_arr, data_from)
 	end
 end
 
@@ -211,6 +202,21 @@ function M.make_vectors_from_angle(self, row)
 	end
 end
 
+function M.pull_not_used_points(self, data_arr, data_from)
+	local last_point = data_arr[data_from]
+	last_point.dpos.x = 0
+	last_point.dpos.y = 0
+	for i = 1, data_from - 1 do
+		local d = data_arr[i]
+		d.dpos.x = 0
+		d.dpos.y = 0
+		d.dlength = 0
+		d.width = 0
+		d.tint.w = 0
+		M.make_vectors_from_angle(self, d)
+	end
+end
+
 --function M.reset_position(self, position)
 --	for i = 1, self._data_w do
 --		self._data[i].pos = vmath.vector3(position)
@@ -254,7 +260,13 @@ function M.update_uv_opts(self)
 	if self.texture_tiling then
 		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(1, 0, 1, 0))
 	else
-		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, self.points_count, 0))
+		local count = self.points_count
+		local offset = 0
+		if self.points_limit > 0 then
+			count = self.points_limit
+			offset = -(self.points_count - self.points_limit)
+		end
+		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, count, offset))
 	end
 end
 
