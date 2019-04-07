@@ -1,20 +1,17 @@
--- TODO
--- * сортировать все функции по именам
--- * разбить большие функции на мелкие
 
 local hyper_msgs = require("hyper_trails.msgs")
 local hyper_fmath = require("hyper_trails.fmath")
 local hyper_geometry = require("hyper_trails.geometry")
 
 go.property("use_world_position", false)
-go.property("wind_direction", vmath.vector3(0.0, 0.0, 0.0))
 go.property("trail_width", 20)
 go.property("trail_tint_color", vmath.vector4(1.0, 1.0, 1.0, 1.0))
-go.property("segment_length_max", 0)
+go.property("segment_length_max", 0) -- todo
 go.property("segment_length_min", 0)
 go.property("points_count", 16)
-go.property("points_limit", 0)
-go.property("fade_tail_alpha", false)
+go.property("points_limit", 0) -- todo
+go.property("fade_tail_alpha", 0)
+go.property("fade_time_sec", 0)
 go.property("shrink_tail_width", false)
 go.property("texture_tiling", true)
 go.property("trail_model_url", msg.url("#trail_model"))
@@ -95,7 +92,7 @@ local function make_angle(diff_pos)
 	return math.atan2(-diff_pos.y, -diff_pos.x)
 end
 
-local function init_data(self)
+local function init_data_points(self)
 	self._data = {}
 
 	for i = 1, self._data_w do
@@ -103,10 +100,12 @@ local function init_data(self)
 		tint.w = 0
 
 		self._data[i] = {
-			dpos = vmath.vector3(), -- vector3
+			dpos = vmath.vector3(), -- vector3, difference between this and previous point
+			dlength = 0, -- length of dpos
 			angle = 0, -- radians
 			tint = tint, -- vector4
 			width = self.trail_width, -- trail width
+			lifetime = 0, -- used for fading
 			prev = self._data[i - 1] -- link to the previous point
 		}
 		make_vectors_from_angle(self, self._data[i])
@@ -160,17 +159,7 @@ local function encode_data_to_texture(self)
 	end
 end
 
-local function update_dirty_data(self)
-	--for i = 1, self._data_w do
-	--	if self._data[i].dirty then
-	--		make_vectors_from_angle(self, self._data[i])
-	--		self._data[i].dirty = false
-	--	end
-	--end
-end
-
 local function draw_trail(self)
-	update_dirty_data(self)
 	encode_data_to_texture(self)
 	update_uv_opts(self)
 	update_texture(self)
@@ -180,46 +169,53 @@ local function last_data_points(self)
 	return self._data[self._data_w - 1], self._data[self._data_w]
 end
 
-local function follow_position(self)
-	local cur_pos = get_position(self)
-	local diff_pos = self._last_pos - cur_pos
-	self._last_pos = cur_pos
+local function follow_position(self, dt)
+	local new_pos = get_position(self)
+	local diff_pos = self._last_pos - new_pos
+	self._last_pos = new_pos
 
 	local prev_point, last_point = last_data_points(self)
-	--local lp_dist = hyper_geometry.distance(prev_point.pos, last_point.pos)
 
 	local new_point = nil
-	--local add_new_p = true
-	--if self.segment_length_min > 0 then 
-	--	if lp_dist < self.segment_length_min then
-	--		add_new_p = false
-	--		new_point = last_point
-	--		last_point = prev_point
-	--	end
-	--end
+	local add_new_point = true
+	if self.segment_length_min > 0 then 
+		if last_point.dlength < self.segment_length_min then
+			diff_pos = diff_pos + last_point.dpos
+			add_new_point = false
+			new_point = last_point
+			last_point = prev_point
+		end
+	end
 
-	--if add_new_p then
+	if add_new_point then
 		new_point = self._data[1]
+		-- shift data array in left direction by one position
 		for i = 1, self._data_w - 1 do
 			self._data[i] = self._data[i + 1]
 		end
-	--end
+	end
+
+	for i = 1, self._data_w do
+		self._data[i].lifetime = self._data[i].lifetime + dt
+	end
 
 	new_point.dpos = diff_pos
+	new_point.dlength = vmath.length(diff_pos)
 	new_point.angle = make_angle(diff_pos)
 	new_point.tint = vmath.vector4(self.trail_tint_color)
 	new_point.width = self.trail_width
+	new_point.lifetime = 0
 	new_point.prev = last_point
 	make_vectors_from_angle(self, new_point)
 
 	self._data[self._data_w] = new_point
 
-	if self.fade_tail_alpha then
-		for i = 1, self._data_w do
-			local w = (i - 1) / (self._data_w - 1)
+	if self.fade_tail_alpha > 0 then
+		local m = math.min(self.fade_tail_alpha, self._data_w)
+		for i = 1, m do
+			local w = (i - 1) / (m - 1)
 			if self._data[i].tint.w > w then
 				self._data[i].tint.w = w
-				-- self._data[i].dirty = true
 			end
 		end
 	end
@@ -228,7 +224,6 @@ local function follow_position(self)
 		for i = 1, self._data_w do
 			self._data[i].width = self.trail_width * (i / self._data_w)
 			make_vectors_from_angle(self, self._data[i])
-			-- self._data[i].dirty = true
 		end
 	end
 end
@@ -257,7 +252,7 @@ function init(self)
 
 	init_props(self)
 	create_texture(self)
-	init_data(self)
+	init_data_points(self)
 	draw_trail(self)
 end
 
@@ -265,7 +260,7 @@ function final(self)
 end
 
 function update(self, dt)
-	follow_position(self)
+	follow_position(self, dt)
 	draw_trail(self)
 end
 
