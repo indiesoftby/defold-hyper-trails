@@ -391,7 +391,7 @@ embedded_instances {
   "  }\n"
   "  properties {\n"
   "    id: \"fade_tail_alpha\"\n"
-  "    value: \"5.0\"\n"
+  "    value: \"64.0\"\n"
   "    type: PROPERTY_TYPE_NUMBER\n"
   "  }\n"
   "}\n"
