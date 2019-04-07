@@ -5,7 +5,7 @@ local trail_maker = require("hyper_trails.trail_maker")
 go.property("use_world_position", false)
 go.property("trail_width", 20)
 go.property("trail_tint_color", vmath.vector4(1.0, 1.0, 1.0, 1.0))
-go.property("segment_length_max", 0) -- todo
+go.property("segment_length_max", 0)
 go.property("segment_length_min", 0)
 go.property("points_count", 16)
 go.property("points_limit", 0)

@@ -94,6 +94,8 @@ function M.follow_position(self, dt)
 
 	data_arr[self._data_w] = new_point
 
+	M.split_segments_by_length(self)
+
 	local data_limit = self._data_w
 	if self.points_limit > 0 then
 		data_limit = self.points_limit
@@ -251,6 +253,42 @@ function M.shrink_width(self, dt, data_from, data_arr, data_limit)
 		data_arr[i].width = self.trail_width * (j / data_limit)
 		M.make_vectors_from_angle(self, data_arr[i])
 		j = j + 1
+	end
+end
+
+function M.split_segments_by_length(self)
+	if not (self.segment_length_max > 0) then
+		return
+	end
+
+	local data_arr = self._data
+	local _, head_point = M.get_head_data_points(self)
+
+	while head_point.dlength > self.segment_length_max do
+		local next_dlength = head_point.dlength - self.segment_length_max
+		local normal = vmath.normalize(head_point.dpos)
+
+		head_point.dlength = self.segment_length_max
+		head_point.dpos = normal * head_point.dlength
+
+		local new_point = data_arr[1]
+		-- shift data array in left direction by one position
+		for i = 1, self._data_w - 1 do
+			data_arr[i] = data_arr[i + 1]
+		end
+
+		new_point.dpos = normal * next_dlength
+		new_point.dlength = next_dlength
+		new_point.angle = M.make_angle(new_point.dpos)
+		new_point.tint = vmath.vector4(self.trail_tint_color)
+		new_point.width = self.trail_width
+		new_point.lifetime = 0
+		new_point.prev = head_point
+		M.make_vectors_from_angle(self, new_point)
+
+		data_arr[self._data_w] = new_point
+
+		_, head_point = M.get_head_data_points(self)
 	end
 end
 
