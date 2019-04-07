@@ -1,9 +1,5 @@
 local M = {}
 
-function M.distance(from, to)
-	return math.sqrt(math.abs(from.x - to.x) ^ 2 + math.abs(from.y - to.y) ^ 2)
-end
-
 --- Are two line segments in 2D space intersecting?
 -- @author https://www.habrador.com/tutorials/math/5-line-line-intersection/
 function M.lines_intersects(l1_p1, l1_p2, l2_p1, l2_p2, include_endpoints)
