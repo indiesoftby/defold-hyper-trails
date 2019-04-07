@@ -6,7 +6,7 @@ local hyper_geometry = require("hyper_trails.geometry")
 --
 -- Helper functions for trail_maker.script
 --
--- 'self' = trail_maker.script instance
+-- 'self' is trail_maker.script instance
 --
 
 function M.create_texture(self)
@@ -164,6 +164,7 @@ end
 function M.init_vars(self)
 	self._tex_h = 8
 	self._tex_w = self.points_count
+	self._tex_w4 = self._tex_w * 4 -- optimization, see write_vectors
 	self._data_w = self.points_count
 	self._resource_path = go.get(self.trail_model_url, "texture0")
 	self._tex_header = { 
@@ -274,7 +275,7 @@ function M.write_tint(self, p_x, tint)
 	local s = self._tex_stream
 	local p_y = 5
 
-	local i = (p_y - 1) * self._tex_w * 4 + (p_x - 1) * 4 + 1
+	local i = (p_y - 1) * self._tex_w4 + (p_x - 1) * 4 + 1
 	s[i + 0] = tint.x * 255
 	s[i + 1] = tint.y * 255
 	s[i + 2] = tint.z * 255
@@ -283,34 +284,19 @@ end
 
 function M.write_vectors(self, p_x, v_1, v_2)
 	local s = self._tex_stream
+	local w4 = self._tex_w4
 
 	local i = (p_x - 1) * 4 + 1
-	local u = hyper_fmath.encode_rgba_float(v_1.x)
-	s[i + 0] = u[1]
-	s[i + 1] = u[2]
-	s[i + 2] = u[3]
-	s[i + 3] = u[4]
+	hyper_fmath.encode_rgba_float_to_buffer(v_1.x, s, i)
 
-	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v_1.y)
-	s[i + 0] = u[1]
-	s[i + 1] = u[2]
-	s[i + 2] = u[3]
-	s[i + 3] = u[4]
+	i = i + w4 -- next line
+	hyper_fmath.encode_rgba_float_to_buffer(v_1.y, s, i)
 
-	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v_2.x)
-	s[i + 0] = u[1]
-	s[i + 1] = u[2]
-	s[i + 2] = u[3]
-	s[i + 3] = u[4]
+	i = i + w4 -- next line
+	hyper_fmath.encode_rgba_float_to_buffer(v_2.x, s, i)
 
-	i = i + self._tex_w * 4
-	u = hyper_fmath.encode_rgba_float(v_2.y)
-	s[i + 0] = u[1]
-	s[i + 1] = u[2]
-	s[i + 2] = u[3]
-	s[i + 3] = u[4]
+	i = i + w4 -- next line
+	hyper_fmath.encode_rgba_float_to_buffer(v_2.y, s, i)
 end
 
 return M
