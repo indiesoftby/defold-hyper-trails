@@ -4,7 +4,7 @@ vertex_program: "/hyper_trails/materials/trail.vp"
 fragment_program: "/hyper_trails/materials/trail.fp"
 vertex_space: VERTEX_SPACE_LOCAL
 vertex_constants {
-  name: "view_proj"
+  name: "world_view_proj"
   type: CONSTANT_TYPE_WORLDVIEWPROJ
   value {
     x: 0.0

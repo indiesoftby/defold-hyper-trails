@@ -1,7 +1,7 @@
 attribute mediump vec4 position;
 attribute mediump vec2 texcoord0;
 
-uniform mediump mat4 view_proj;
+uniform mediump mat4 world_view_proj;
 uniform mediump vec4 tex_size;
 uniform mediump vec4 uv_opts;
 
@@ -37,5 +37,5 @@ void main()
     // uv calculation
     var_texcoord0 = vec2(texcoord0.x, texcoord0.y * uv_opts.x + (position.x + uv_opts.w) / uv_opts.z * uv_opts.y);
 
-    gl_Position = view_proj * vec4(x, y, position.z, 1.0);
+    gl_Position = world_view_proj * vec4(x, y, position.z, 1.0);
 }
