@@ -174,7 +174,7 @@ embedded_instances {
   "  type: \"model\"\n"
   "  data: \"mesh: \\\"/hyper_trails/models/trail_16.dae\\\"\\n"
   "material: \\\"/hyper_trails/materials/trail.material\\\"\\n"
-  "textures: \\\"/hyper_trails/textures/texture0_5.png\\\"\\n"
+  "textures: \\\"/hyper_trails/textures/data/texture0_5.png\\\"\\n"
   "textures: \\\"/hyper_trails/textures/white.png\\\"\\n"
   "skeleton: \\\"\\\"\\n"
   "animations: \\\"\\\"\\n"

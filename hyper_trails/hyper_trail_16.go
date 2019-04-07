@@ -18,7 +18,7 @@ embedded_components {
   type: "model"
   data: "mesh: \"/hyper_trails/models/trail_16.dae\"\n"
   "material: \"/hyper_trails/materials/trail.material\"\n"
-  "textures: \"/hyper_trails/textures/texture0_1.png\"\n"
+  "textures: \"/hyper_trails/textures/data/texture0_1.png\"\n"
   "textures: \"/hyper_trails/textures/white.png\"\n"
   "skeleton: \"\"\n"
   "animations: \"\"\n"
