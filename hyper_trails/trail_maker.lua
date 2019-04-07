@@ -192,15 +192,16 @@ function M.make_vectors_from_angle(self, row)
 	row.v_2 = vmath.vector3(math.cos(a + math.pi) * w, math.sin(a + math.pi) * w, 0)
 
 	-- Trying to prevent crossing the points
-	if row.prev ~= nil and row.prev.v1 ~= nil then
-		local prev = row.prev
-		local intersects = hyper_geometry.lines_intersects(row.v_1, prev.v_1 + row.dpos, row.v_2, prev.v_2 + row.dpos, false)
-		if intersects then
-			local v = row.v_2
-			row.v_2 = row.v_1
-			row.v_1 = v
-		end
-	end
+	-- TEMPORARILY DISABLED
+	-- if row.prev ~= nil and row.prev.v_1 ~= nil then
+	-- 	local prev = row.prev
+	-- 	local intersects = hyper_geometry.lines_intersects(row.v_1, prev.v_1 + row.dpos, row.v_2, prev.v_2 + row.dpos, false)
+	-- 	if intersects then
+	-- 		local v = row.v_2
+	-- 		row.v_2 = row.v_1
+	-- 		row.v_1 = v
+	-- 	end
+	-- end
 end
 
 function M.pull_not_used_points(self, data_arr, data_from)
