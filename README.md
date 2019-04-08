@@ -1,8 +1,6 @@
-<!---
-![](docs/logo.png)
--->
+![Hyper Trails Logo](docs/logo.png)
 
-[![Latest Release](https://img.shields.io/github/release/aglitchman/defold-hyper-trails.svg)](https://github.com/aglitchman/defold-hyper-trails/releases)
+[![Latest Release](https://img.shields.io/github/release/indiesoftby/defold-hyper-trails.svg)](https://github.com/indiesoftby/defold-hyper-trails/releases)
 
 # Hyper Trails
 
@@ -12,44 +10,60 @@ Easy to use and customizable trail effect for the [Defold](https://www.defold.co
 
 You can use **Hyper Trails** in your own project by adding this project as a [Defold library dependency](http://www.defold.com/manuals/libraries/). Open your `game.project` file and in the dependencies field under project add:
 
-https://github.com/aglitchman/defold-hyper-trails/archive/master.zip
+https://github.com/indiesoftby/defold-hyper-trails/archive/master.zip
 
-Or point to the ZIP file of a [specific release](https://github.com/aglitchman/defold-hyper-trails/releases).
+Or point to the ZIP file of a [specific release](https://github.com/indiesoftby/defold-hyper-trails/releases).
 
 ## Usage
 
-...
+Using it in your 2D game is simple:
 
-### trail_maker
+1. Add .zip as a [Defold library dependency](http://www.defold.com/manuals/libraries/) - see above.
+2. Copy `trail_maker.script` and `trail_model.model` from `/hyper_trails/hyper_trail_16.go` into your game object.
+3. Run your game and move the game object. Enjoy!
+
+## How Trail Rendered
+
+![Hyper Trails Logo](docs/trail.png)
+
+1. Есть заранее подготовленная модель из 15 квадов (16 пар точек), позиции которых целые числа: 0,1,2..15. 
+2. Есть текстура, которая используется в качестве массива данных. Данные кодируются в RGBA цвета.
+3. Шейдер использует позиции из модели, данные из текстуры и формирует Hyper Trail.
+
+Необходимо указать в Custom Resources игрового проекта путь к текстурам: /hyper_trails/textures/
+Также (опционально) указать кастомный профиль текстур и исключить /hyper_trails/textures/ из premultiplied_alpha
+
+## Script `trail_maker`
 
 
 
-### trail_model
+## Model `trail_model`
 
 Заранее подготовленная 3D-модель, вершины которой изменяются с помощью vertex shader и. В комплекте с Hyper Trails есть три модели: с 16, 32 и 64 точками.
 
-## Configuration
-
-Select the `trail_maker` script component attached to the `hyper_trail_16.go` to modify the properties:
-
-...
-
 ## Messages
 
-Используйте константы из модуля `hyper_trails.msgs` для отправки следующих сообщений game object или скрипту `trail_maker`.
+Use the constants from the `hyper_trails.msgs` module to send the following messages to the `trail_maker` script:
 
-### follow_target
+1. 
+2. 
+3. 
 
-`hyper_trails.msgs.FOLLOW_TARGET` hash("follow_target")
-`hyper_trails.msgs.FOLLOW_POSITION` hash("follow_position")
-`hyper_trails.msgs.RESET_POSITION` hash("reset_position")
-`hyper_trails.msgs.DRAW_TRAIL` hash("draw_trail")
+## FAQ
+
+### Why don't you use uniform attributes to render a trail?
+
+1. Defold does not allow you to specify an array as a uniform attribute for the vertex shader.
+2. Defold does not allow you to use more than 16 uniform attributes, although the minimum OpenGL ES specs allow is *128* vec4 uniforms in the vertex shader.
+3. WebGL and OpenGL ES do not allow you to make an array of these 16 uniform attributes because of this limitation: "Support for indexing array/vector/matrix with a non-constant is only mandated for non-sampler uniforms in the vertex shader".
 
 ## Known Issues
 
-1. Каждый Hyper Trail использует и обновляет свой экземпляр текстуры с данными. Загрузка текстуры в видеопамять требует много процессорного времени. Имейте это в виду, когда решите добавить 10 и больше Hyper Trail на экран.
-2. Данные в вершинный шейдер передаются с помощью текстуры. Числа закодированы в RGBA цвет с помощью 4 значений [0..1]. Из-за этого страдает точность передаваемых значений и есть ограничение: максимальный размер Hyper Trail 65535 пикселей.
-3. Для каждого Hyper Trail требуется уникальная текстура в канале texture0, которую он использует для данных. Поэтому указывайте уникальный файл texture0 для каждого Hyper Trail в коллекции.
+Each Hyper Trail uses and updates its own instance of data texture. The texture is used as an array for vertex shader. So:
+
+1. Preparing a texture and loading it into GPU memory requires a LOT of CPU time. Keep this in mind when deciding to add 5 or more Hyper Trails to the collection.
+2. Floats encoded in RGBA color with 4 values [0..1]. Due to the low accuracy of these floats, the maximum size of Hyper Trail is 65535 pixels.
+3. For each Hyper Trail in the collection, specify a unique `texture0` for the `trail_model`.
 
 ## Roadmap
 
