@@ -71,38 +71,17 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "logo"
+  id: "logo_physics"
   data: "embedded_components {\n"
   "  id: \"collisionobject\"\n"
   "  type: \"collisionobject\"\n"
-  "  data: \"collision_shape: \\\"\\\"\\n"
+  "  data: \"collision_shape: \\\"/demo/assets/images/logo_small.convexshape\\\"\\n"
   "type: COLLISION_OBJECT_TYPE_DYNAMIC\\n"
   "mass: 1.0\\n"
   "friction: 0.1\\n"
   "restitution: 0.5\\n"
   "group: \\\"default\\\"\\n"
   "mask: \\\"default\\\"\\n"
-  "embedded_collision_shape {\\n"
-  "  shapes {\\n"
-  "    shape_type: TYPE_BOX\\n"
-  "    position {\\n"
-  "      x: 0.0\\n"
-  "      y: 0.0\\n"
-  "      z: 0.0\\n"
-  "    }\\n"
-  "    rotation {\\n"
-  "      x: 0.0\\n"
-  "      y: 0.0\\n"
-  "      z: 0.0\\n"
-  "      w: 1.0\\n"
-  "    }\\n"
-  "    index: 0\\n"
-  "    count: 3\\n"
-  "  }\\n"
-  "  data: 16.0\\n"
-  "  data: 16.0\\n"
-  "  data: 0.5\\n"
-  "}\\n"
   "linear_damping: 0.0\\n"
   "angular_damping: 0.0\\n"
   "locked_rotation: false\\n"
@@ -158,7 +137,7 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "trail"
+  id: "logo_physics_trail"
   data: "components {\n"
   "  id: \"trail_maker\"\n"
   "  component: \"/hyper_trails/trail_maker.script\"\n"
@@ -232,7 +211,7 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "walls"
+  id: "physics_walls"
   data: "embedded_components {\n"
   "  id: \"co_bottom\"\n"
   "  type: \"collisionobject\"\n"

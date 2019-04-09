@@ -7,7 +7,7 @@ key_trigger {
   action: "physics"
 }
 key_trigger {
-  input: KEY_SPACE
+  input: KEY_UP
   action: "jump"
 }
 key_trigger {
