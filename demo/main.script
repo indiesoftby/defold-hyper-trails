@@ -17,5 +17,7 @@ end
 function on_input(self, action_id, action)
 	if action_id == hash("profile") and action.pressed then
 		msg.post("@system:", "toggle_profile")
+	elseif action_id == hash("physics") and action.pressed then
+		msg.post("@system:", "toggle_physics_debug")
 	end
 end

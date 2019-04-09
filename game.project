@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /demo/main.collectionc
+main_collection = /demo/demo_main.collectionc
 
 [script]
 shared_state = 1
@@ -18,4 +18,8 @@ include_dirs = hyper_trails
 
 [input]
 game_binding = /demo/input/game.input_bindingc
+
+[physics]
+scale = 0.01
+gravity_y = -300.0
 
