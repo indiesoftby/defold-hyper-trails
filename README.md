@@ -30,8 +30,7 @@ Using it in your 2D game is simple:
 2. Есть текстура, которая используется в качестве массива данных. Данные кодируются в RGBA цвета.
 3. Шейдер использует позиции из модели, данные из текстуры и формирует Hyper Trail.
 
-Необходимо указать в Custom Resources игрового проекта путь к текстурам: /hyper_trails/textures/
-Также (опционально) указать кастомный профиль текстур и исключить /hyper_trails/textures/ из premultiplied_alpha
+(опционально) Создать дополнительный профиль текстур с выключенным premultiplied_alpha и включить в него путь /hyper_trails/textures/data/ В редакторе будет отображаться красивое preview для Hyper Trail:
 
 ## Script `trail_maker`
 
@@ -39,7 +38,7 @@ Using it in your 2D game is simple:
 
 ## Model `trail_model`
 
-Заранее подготовленная 3D-модель, вершины которой изменяются с помощью vertex shader и. В комплекте с Hyper Trails есть три модели: с 16, 32 и 64 точками.
+Заранее подготовленная 3D-модель, вершины которой изменяются с помощью vertex shader и таким образом рисуется след. В комплекте с Hyper Trails есть три модели: с 16, 32 и 64 точками (15, 31, 63 сегментами).
 
 ## Messages
 
@@ -65,7 +64,12 @@ Each Hyper Trail uses and updates its own instance of data texture. The texture 
 2. Floats encoded in RGBA color with 4 values [0..1]. Due to the low accuracy of these floats, the maximum size of Hyper Trail is 65535 pixels.
 3. For each Hyper Trail in the collection, specify a unique `texture0` for the `trail_model`.
 
-## Roadmap
+Defold сейчас имеет такой [update order](https://forum.defold.com/t/go-set-position-lag/47458/10?u=aglitchman), что Hyper Trail  всегда будет запаздывать для:
+1. Физических объектов (пример ниже).
+2. Объектов, позиция которых изменяется с помощью go.animate. 
 
-* Исправить баг с `pos_offset`.
-* Перенести часть кода trail_maker.script в отдельный Lua модуль.
+![Physics Update Order Problem](docs/update_order_physics.png)
+
+## License
+
+MIT License.
