@@ -4,6 +4,9 @@ images {
 images {
   image: "/demo/assets/images/logo_small.png"
 }
+images {
+  image: "/demo/assets/images/physics_walls.png"
+}
 margin: 0
 extrude_borders: 2
 inner_padding: 0
