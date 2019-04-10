@@ -1,4 +1,3 @@
-local hyper_msgs = require("hyper_trails.msgs")
 
 go.property("_angle", 90)
 
