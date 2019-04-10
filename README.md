@@ -21,32 +21,55 @@ Using it in your 2D game is simple:
 1. Add .zip as a [Defold library dependency](http://www.defold.com/manuals/libraries/) - see above.
 2. Copy `trail_maker.script` and `trail_model.model` from `/hyper_trails/hyper_trail_16.go` into your game object.
 3. Run your game and move the game object. Enjoy!
+4. *(Optional)* Create an additional [.texture_profile](https://www.defold.com/manuals/texture-profiles/) with *Premultiply alpha* turned off for path `/hyper_trails/textures/data/`. Because of this, a nice preview for trails will be displayed in the Defold IDE.
 
-## How Trail Rendered
+## Example App
 
-![Hyper Trails Logo](docs/trail.png)
+See the demo game.project for examples of how to use Hyper Trails on its own.
 
-1. Есть заранее подготовленная модель из 15 квадов (16 пар точек), позиции которых целые числа: 0,1,2..15. 
-2. Есть текстура, которая используется в качестве массива данных. Данные кодируются в RGBA цвета.
-3. Шейдер использует позиции из модели, данные из текстуры и формирует Hyper Trail.
+## How Does It Work?
 
-(опционально) Создать дополнительный профиль текстур с выключенным premultiplied_alpha и включить в него путь /hyper_trails/textures/data/ В редакторе будет отображаться красивое preview для Hyper Trail:
+1. A 3d model of 15 quads is used, the positions of which are integers: 0,1,2..15.
+2. The texture from `texture0` sampler is used as an array for a vertex shader.
+3. The vertex shader transforms the vertices of this 3d model during rendering of a trail.
 
 ## Script `trail_maker`
 
+### Properties
 
+*⚠️ This doc is a work in progress ⚠️*
+
+![Terminology](docs/trail.png)
+
+* `use_world_position` (boolean) - Calculate object movement delta using `go.get_position` or `go.get_world_position`.
+* `trail_width` (number)
+* `trail_tint_color` (vector4)
+* `segment_length_max` (number)
+* `segment_length_min` (number)
+* `points_count` (number) - 16, 32 or 64.
+* `points_limit` (number) - Set 0 to use all points.
+* `fade_tail_alpha` (number)
+* `shrink_tail_width` (boolean)
+* `shrink_length_per_sec` (number)
+* `texture_tiling` (boolean)
+* `trail_model_url` (url)
 
 ## Model `trail_model`
 
-Заранее подготовленная 3D-модель, вершины которой изменяются с помощью vertex shader и таким образом рисуется след. В комплекте с Hyper Trails есть три модели: с 16, 32 и 64 точками (15, 31, 63 сегментами).
+The vertex shader transforms the vertices of this 3d model during rendering of a trail.
 
-## Messages
+Hyper Trails comes with three models: with 16, 32 and 64 points (i.e. 15, 31, 63 segments):
 
-Use the constants from the `hyper_trails.msgs` module to send the following messages to the `trail_maker` script:
+* `/hyper_trails/models/trail_16.dae` (16 points)
+* `/hyper_trails/models/trail_32.dae` (32 points)
+* `/hyper_trails/models/trail_64.dae` (64 points)
 
-1. 
-2. 
-3. 
+Don't forget to set `points_count` in `trail_maker.script` according to the selected model.
+
+### Properties
+
+* `texture0` is a data texture. For each trail in the collection, specify an **unique** `texture0` from `/hyper_trails/textures/data/`.
+* `texture1` is drawn on the trail.
 
 ## FAQ
 
@@ -58,15 +81,20 @@ Use the constants from the `hyper_trails.msgs` module to send the following mess
 
 ## Known Issues
 
+### Data Texture
+
 Each Hyper Trail uses and updates its own instance of data texture. The texture is used as an array for vertex shader. So:
 
-1. Preparing a texture and loading it into GPU memory requires a LOT of CPU time. Keep this in mind when deciding to add 5 or more Hyper Trails to the collection.
-2. Floats encoded in RGBA color with 4 values [0..1]. Due to the low accuracy of these floats, the maximum size of Hyper Trail is 65535 pixels.
-3. For each Hyper Trail in the collection, specify a unique `texture0` for the `trail_model`.
+1. Preparing a texture and loading it into GPU memory requires a LOT of CPU time. Keep this in mind when deciding to add 5 or more trails to the collection.
+2. Floats encoded in RGBA color with 4 values [0..1]. Due to the low accuracy of these floats, the maximum size of trail is 65535 pixels.
+3. For each trail in the collection, specify an **unique** `texture0` for the `trail_model`.
 
-Defold сейчас имеет такой [update order](https://forum.defold.com/t/go-set-position-lag/47458/10?u=aglitchman), что Hyper Trail  всегда будет запаздывать для:
-1. Физических объектов (пример ниже).
-2. Объектов, позиция которых изменяется с помощью go.animate. 
+### Trail Position
+
+Defold now has such [the update order](https://forum.defold.com/t/go-set-position-lag/47458/10?u=aglitchman) so a trail head position will always be lagging behind for:
+
+1. Physics-based objects (see the picture below).
+2. Objects animated using `go.animate()`. 
 
 ![Physics Update Order Problem](docs/update_order_physics.png)
 
