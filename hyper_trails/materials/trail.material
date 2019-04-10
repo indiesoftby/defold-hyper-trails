@@ -27,7 +27,7 @@ vertex_constants {
   name: "uv_opts"
   type: CONSTANT_TYPE_USER
   value {
-    x: 0.0
+    x: 1.0
     y: 0.0
     z: 1.0
     w: 0.0

@@ -12,6 +12,7 @@ high_dpi = 1
 [project]
 title = hyper_trails
 version = 1.0
+dependencies = https://github.com/britzl/defold-png/archive/1.2.1.zip
 
 [library]
 include_dirs = hyper_trails
@@ -22,4 +23,7 @@ game_binding = /demo/input/game.input_bindingc
 [physics]
 scale = 0.01
 gravity_y = -300.0
+
+[graphics]
+texture_profiles = /demo/assets/graphics/demo.texture_profiles
 

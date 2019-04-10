@@ -287,7 +287,29 @@ end
 
 function M.update_texture(self)
 	resource.set_texture(self._resource_path, self._tex_header, self._tex_buffer)
+
+	-- DO NOT REMOVE
+	-- if write_texture then
+	-- 	print("Write data.png")
+	-- 	local rgba = buffer.get_bytes(self._tex_buffer, hash("rgba"))
+	-- 	local bytes = png.encode_rgba(rgba, self._tex_w, self._tex_h)
+	-- 	local f = io.open("hyper_trails/textures/data/texture.png", "wb")
+	-- 	f:write(bytes)
+	-- 	f:flush()
+	-- 	f:close()
+	-- 	-- + flip vertical!
+	-- 	write_texture = false
+	-- end
 end
+
+function on_input(self, action_id, action)
+	if action_id == hash("profile") and action.pressed then
+		msg.post("@system:", "toggle_profile")
+	elseif action_id == hash("physics") and action.pressed then
+		msg.post("@system:", "toggle_physics_debug")
+	end
+end
+
 
 function M.update_uv_opts(self)
 	if self.texture_tiling then
