@@ -15,8 +15,8 @@ end
 function on_input(self, action_id, action)
 	local center = go.get_position(go.get_id("/logo_physics"))
 	local co_url = "/logo_physics#collisionobject"
-	if action_id == hash("jump") and action.pressed then
-		msg.post(co_url, "apply_force", {force = vmath.vector3(0, 10000, 0), position = center})
+	if action_id == hash("jump") then
+		msg.post(co_url, "apply_force", {force = vmath.vector3(0, 1000, 0), position = center})
 	elseif action_id == hash("left") then
 		msg.post(co_url, "apply_force", {force = vmath.vector3(-1000, 0, 0), position = center})
 	elseif action_id == hash("right") then
