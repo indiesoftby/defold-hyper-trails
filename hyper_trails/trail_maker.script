@@ -1,5 +1,4 @@
 
-local hyper_msgs = require("hyper_trails.msgs")
 local trail_maker = require("hyper_trails.trail_maker")
 
 go.property("use_world_position", false)
@@ -29,11 +28,4 @@ end
 function update(self, dt)
 	trail_maker.follow_position(self, dt)
 	trail_maker.draw_trail(self)
-end
-
-function on_message(self, message_id, message, sender)
-	if message_id == hyper_msgs.RESET_POSITION then
-		--trail_maker.reset_position(self, go.get_position())
-		--trail_maker.draw_trail(self)
-	end
 end

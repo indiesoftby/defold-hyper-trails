@@ -221,13 +221,6 @@ function M.pull_not_used_points(self, data_arr, data_from)
 	end
 end
 
---function M.reset_position(self, position)
---	for i = 1, self._data_w do
---		self._data[i].pos = vmath.vector3(position)
---		self._data[i].dirty = true
---	end
---end
-
 function M.shrink_length(self, dt, data_arr, data_from)
 	local to_shrink = self.shrink_length_per_sec * dt
 	for i = data_from + 1, self._data_w - 1 do
