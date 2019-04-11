@@ -13,7 +13,6 @@ samples = 4
 [project]
 title = hyper_trails
 version = 1.0
-dependencies = https://github.com/britzl/defold-png/archive/1.2.1.zip
 
 [library]
 include_dirs = hyper_trails
