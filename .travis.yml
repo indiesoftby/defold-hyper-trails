@@ -1,0 +1,14 @@
+dist: xenial
+language: java
+
+script:
+  - wget https://d.defold.com/archive/11b1e7662dd68172fca551c52cba248eea16a364/bob/bob.jar -O bob.jar
+  - java -jar bob.jar --bundle-output build/bundle/js-web --platform js-web --archive resolve build bundle
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  local_dir: build/bundle/js-web/hyper_trails
+  on:
+    branch: master
