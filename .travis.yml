@@ -2,8 +2,9 @@ dist: xenial
 language: java
 
 script:
-  - wget https://d.defold.com/archive/11b1e7662dd68172fca551c52cba248eea16a364/bob/bob.jar -O bob.jar
-  - java -jar bob.jar --bundle-output build/bundle/js-web --platform js-web --archive resolve build bundle
+  - mkdir -p build || travis_terminate 1
+  - wget --progress=dot:mega https://d.defold.com/archive/11b1e7662dd68172fca551c52cba248eea16a364/bob/bob.jar -O build/bob.jar || travis_terminate 1
+  - java -jar build/bob.jar --email foo@bar.com --auth 12345 --bundle-output build/bundle/js-web --platform js-web --archive resolve build bundle || travis_terminate 1
 
 deploy:
   provider: pages
