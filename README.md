@@ -1,6 +1,6 @@
 ![Hyper Trails Logo](docs/logo.png)
 
-[![Latest Release](https://img.shields.io/github/release/indiesoftby/defold-hyper-trails.svg)](https://github.com/indiesoftby/defold-hyper-trails/releases)
+[![Build Status](https://travis-ci.com/indiesoftby/defold-hyper-trails.svg?branch=master)](https://travis-ci.com/indiesoftby/defold-hyper-trails) [![Latest Release](https://img.shields.io/github/release/indiesoftby/defold-hyper-trails.svg)](https://github.com/indiesoftby/defold-hyper-trails/releases)
 
 # Hyper Trails
 
