@@ -27,6 +27,8 @@ Using it in your 2D game is simple:
 
 See the demo game.project for examples of how to use Hyper Trails on its own.
 
+🕹️ [Play demo online](https://indiesoftby.github.io/defold-hyper-trails/) 🕹️
+
 ## How Does It Work?
 
 1. A 3d model of 15 quads is used, the positions of which are integers: 0,1,2..15.
