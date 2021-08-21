@@ -27,3 +27,6 @@ gravity_y = -300.0
 [graphics]
 texture_profiles = /demo/assets/graphics/demo.texture_profiles
 
+[shader]
+output_spirv = 1
+

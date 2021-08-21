@@ -6,7 +6,7 @@ uniform mediump vec4 tex_size;
 uniform mediump vec4 uv_opts;
 
 uniform highp sampler2D texture0;
-uniform lowp sampler2D texture1;
+//uniform lowp sampler2D texture1;
 
 varying lowp vec4 var_tint;
 varying mediump vec2 var_texcoord0;
