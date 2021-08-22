@@ -30,3 +30,7 @@ texture_profiles = /demo/assets/graphics/demo.texture_profiles
 [shader]
 output_spirv = 1
 
+[html5]
+scale_mode = fit
+cssfile = /builtins/manifests/web/dark_theme.css
+
