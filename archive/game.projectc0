@@ -1,6 +1,6 @@
 [project]
 title = hyper_trails
-version = 1.0
+version = 1.0.1
 write_log = 0
 compress_archive = 1
 publisher = unnamed
@@ -143,12 +143,12 @@ localizations = en
 custom_heap_size = 0
 heap_size = 256
 htmlfile = /builtins/manifests/web/engine_template.html
-cssfile = /builtins/manifests/web/light_theme.css
+cssfile = /builtins/manifests/web/dark_theme.css
 archive_location_prefix = archive
 show_fullscreen_button = 1
 show_made_with_defold = 1
 show_console_banner = 1
-scale_mode = downscale_fit
+scale_mode = fit
 
 [particle_fx]
 max_count = 64
