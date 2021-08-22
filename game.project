@@ -12,7 +12,7 @@ samples = 4
 
 [project]
 title = hyper_trails
-version = 1.0
+version = 1.0.1
 
 [library]
 include_dirs = hyper_trails
