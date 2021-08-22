@@ -21,7 +21,7 @@ Using it in your 2D game is simple:
 1. Add .zip as a [Defold library dependency](http://www.defold.com/manuals/libraries/) - see above.
 2. Copy `trail_maker.script` and `trail_model.model` from `/hyper_trails/hyper_trail_16.go` into your game object.
 3. Run your game and move the game object. Enjoy!
-4. *(Optional)* Create an additional [.texture_profile](https://www.defold.com/manuals/texture-profiles/) with *Premultiply alpha* turned off for path `/hyper_trails/textures/data/`. Because of this, a nice preview for trails will be displayed in the Defold IDE.
+4. *(Optional)* Create a custom [.texture_profile](https://www.defold.com/manuals/texture-profiles/) with *Premultiply alpha* turned off for the path `/hyper_trails/textures/data/` to have a nice preview for trails in the Defold IDE.
 
 ## Example App
 
@@ -55,6 +55,7 @@ See the demo game.project for examples of how to use Hyper Trails on its own.
 * `shrink_length_per_sec` (number)
 * `texture_tiling` (boolean)
 * `trail_model_url` (url)
+* `auto_update` (boolean) - Uncheck this and send the `update` message to the script instance to manually update the trail.
 
 ## Model `trail_model`
 
@@ -99,6 +100,8 @@ Defold now has such [the update order](https://forum.defold.com/t/go-set-positio
 2. Objects animated using `go.animate()`. 
 
 ![Physics Update Order Problem](docs/update_order_physics.png)
+
+**Tip:** use the `trail_maker.queue_late_update()` function to get rid of this issue. Disable the `Auto Update` property for the trail maker instance and check the ` demo/demo_physics.script` how to manually send `update` message to the trail maker script.
 
 ## License
 

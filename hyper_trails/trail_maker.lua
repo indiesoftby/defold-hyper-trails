@@ -1,5 +1,9 @@
 local M = {}
 
+-- M.UPDATE_MODE_DEFAULT = hash("DEFAULT")
+-- M.UPDATE_MODE_LATE = hash("LATE")
+-- M.UPDATE_MODE_MANUAL = hash("MANUAL")
+
 local hyper_fmath = require("hyper_trails.fmath")
 local hyper_geometry = require("hyper_trails.geometry")
 
@@ -8,6 +12,15 @@ local hyper_geometry = require("hyper_trails.geometry")
 --
 -- 'self' is trail_maker.script instance
 --
+
+local EMPTY_TABLE = {}
+local VECTOR3_EMPTY = vmath.vector3()
+local VECTOR3_ONE = vmath.vector3(1)
+
+-- Based on https://forum.defold.com/t/delay-when-using-draw-line-in-update/68695/2
+function M.queue_late_update()
+	physics.raycast_async(VECTOR3_EMPTY, VECTOR3_ONE, EMPTY_TABLE) 
+end
 
 function M.create_texture(self)
 	self._tex_buffer = buffer.create(self._tex_w * self._tex_h, { 

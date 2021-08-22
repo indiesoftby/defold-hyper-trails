@@ -1,15 +1,28 @@
+local trail_maker = require("hyper_trails.trail_maker")
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
+
+	-- test:
+	-- go.set("/logo_physics#sprite", "scale", vmath.vector3(0.1))
 end
 
 function final(self)
 end
 
 function update(self, dt)
+	trail_maker.queue_late_update()
+end
+
+local function late_update(self)
 	go.set_position(go.get_position(go.get_id("/logo_physics")), go.get_id("/logo_physics_trail"))
+	msg.post("/logo_physics_trail#trail_maker", "update")
 end
 
 function on_message(self, message_id, message, sender)
+	if message_id == hash("ray_cast_missed") then
+		late_update(self)
+	end
 end
 
 function on_input(self, action_id, action)

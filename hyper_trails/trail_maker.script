@@ -13,6 +13,7 @@ go.property("shrink_tail_width", false)
 go.property("shrink_length_per_sec", 0)
 go.property("texture_tiling", true)
 go.property("trail_model_url", msg.url("#trail_model"))
+go.property("auto_update", true)
 
 function init(self)
 	trail_maker.init_vars(self)
@@ -25,7 +26,22 @@ end
 function final(self)
 end
 
-function update(self, dt)
-	trail_maker.follow_position(self, dt)
+local function update_trail(self, dt)
+	trail_maker.follow_position(self, self.dt)
 	trail_maker.draw_trail(self)
+end
+
+function update(self, dt)
+	self.dt = dt
+	if self.auto_update then
+		update_trail(self, dt)
+	end
+end
+
+local UPDATE = hash("update")
+
+function on_message(self, message_id, message, sender)
+	if message_id == UPDATE then
+		update_trail(self, message.dt or self.dt)
+	end
 end
