@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - master
   schedule:
     # nightly at 05:00 on the 1st and 15th
     - cron: 0 5 1,15 * *
