@@ -6,6 +6,8 @@
 
 Easy to use and customizable trail effect for the [Defold](https://www.defold.com) game engine.
 
+Feel free to ask questions: [the topic about this asset is on the Defold forum](https://forum.defold.com/t/hyper-trails-customizable-trail-effect/48986).
+
 ## Installation
 
 You can use **Hyper Trails** in your own project by adding this project as a [Defold library dependency](http://www.defold.com/manuals/libraries/). Open your `game.project` file and in the dependencies field under project add:
@@ -103,6 +105,10 @@ Defold now has such [the update order](https://forum.defold.com/t/go-set-positio
 
 **Tip:** use the `trail_maker.queue_late_update()` function to get rid of this issue. Disable the `Auto Update` property for the trail maker instance and check the ` demo/demo_physics.script` how to manually send `update` message to the trail maker script.
 
-## License
+## Credits
+
+Artsiom Trubchyk ([@aglitchman](https://github.com/aglitchman)) is the current Hyper Trails owner within Indiesoft and is responsible for the open source repository.
+
+### License
 
 MIT License.
