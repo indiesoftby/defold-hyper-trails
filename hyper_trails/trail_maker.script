@@ -15,12 +15,16 @@ go.property("texture_tiling", true)
 go.property("trail_model_url", msg.url("#trail_model"))
 go.property("auto_update", true)
 
-function init(self)
+local function reset_trail(self)
 	trail_maker.init_vars(self)
 	trail_maker.init_props(self)
 	trail_maker.create_texture(self)
 	trail_maker.init_data_points(self)
 	trail_maker.draw_trail(self)
+end
+
+function init(self)
+	reset_trail(self)
 end
 
 function final(self)
@@ -39,9 +43,12 @@ function update(self, dt)
 end
 
 local UPDATE = hash("update")
+local RESET = hash("reset")
 
 function on_message(self, message_id, message, sender)
 	if message_id == UPDATE then
 		update_trail(self, message.dt or self.dt)
+	elseif message_id == RESET then
+		reset_trail(self)
 	end
 end
