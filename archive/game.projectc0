@@ -41,6 +41,7 @@ contact_impulse_limit = 0
 ray_cast_limit_2d = 64
 ray_cast_limit_3d = 128
 trigger_overlap_capacity = 16
+velocity_threshold = 1
 
 [bootstrap]
 main_collection = /demo/demo_main.collectionc
