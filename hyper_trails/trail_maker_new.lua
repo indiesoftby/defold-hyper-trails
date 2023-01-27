@@ -22,34 +22,44 @@ function M.queue_late_update()
 	physics.raycast_async(VECTOR3_EMPTY, VECTOR3_ONE, EMPTY_TABLE) 
 end
 
-function M.create_texture(self)
-	self._tex_buffer = buffer.create(self._tex_w * self._tex_h, { 
-		{
-			name = hash("rgba"), 
-			type = buffer.VALUE_TYPE_UINT8, 
-			count = 4
-		}
-	})
-	
-	self._tex_stream = buffer.get_stream(self._tex_buffer, hash("rgba"))
-end
-
 function M.draw_trail(self)
-	M.encode_data_to_texture(self)
-	M.update_uv_opts(self)
-	M.update_texture(self)
+	M.date_to_buffers(self)
+	-- M.update_uv_opts(self)
 end
 
-function M.encode_data_to_texture(self)
-	local p = vmath.vector3()
+local function set_vector3_to_stream(stream, vector, index)
+	index = index * 3 - 2
+	stream[index + 0] = vector.x
+	stream[index + 1] = vector.y
+	stream[index + 2] = vector.z
+end
 
-	for i = self._data_w, 1, -1 do
-		local d = self._data[i]
+local function set_vector4_to_stream(stream, vector, index)
+	index = index * 4 - 3
+	stream[index + 0] = vector.x
+	stream[index + 1] = vector.y
+	stream[index + 2] = vector.z
+	stream[index + 3] = vector.w
+end
 
-		M.write_vectors(self, i, p + d.v_1, p + d.v_2)
-		M.write_tint(self, i, d.tint)
+function M.date_to_buffers(self)
+	local trail_point_position = vmath.vector3()
+	local offset_by_float = 1
+	for i = self._data_w, 1, -1 do 
+		local point_data = self._data[i]
+		local vertex_up   = trail_point_position + point_data.v_1
+		local vertex_down = trail_point_position + point_data.v_2
+
+		set_vector3_to_stream(self.vertex_position_stream, vertex_up,   offset_by_float + 0)
+		set_vector3_to_stream(self.vertex_position_stream, vertex_down, offset_by_float + 1)
 		
-		p = p + d.dpos
+		set_vector4_to_stream(self.vertex_tint_stream, point_data.tint, offset_by_float + 0)
+		set_vector4_to_stream(self.vertex_tint_stream, point_data.tint, offset_by_float + 1)
+		
+		print(point_data.tint)
+		
+		offset_by_float = offset_by_float + 2
+		trail_point_position = trail_point_position + point_data.dpos -- next point position
 	end
 end
 
@@ -111,11 +121,9 @@ function M.follow_position(self, dt)
 	M.split_segments_by_length(self)
 
 	local data_limit = self._data_w
-	
 	if self.points_limit > 0 then
 		data_limit = self.points_limit
 	end
-	
 	local data_from = self._data_w - data_limit + 1
 
 	if self.shrink_length_per_sec > 0 then
@@ -171,6 +179,54 @@ function M.init_data_points(self)
 	end
 end
 
+function M.init_buffers(self)
+	local buf = buffer.create(self.points_count*2, {
+		{ name = hash("position"), type=buffer.VALUE_TYPE_FLOAT32, count = 3 },
+		{ name = hash("texcoord0"), type=buffer.VALUE_TYPE_FLOAT32, count = 2 },
+		{ name = hash("tint"), type=buffer.VALUE_TYPE_FLOAT32, count = 4 },
+	})
+	
+	local res = go.get("#trail_model", "vertices")
+	resource.set_buffer(res, buf)
+	buf = resource.get_buffer(res)
+	
+	self.vertex_position_stream = buffer.get_stream(buf, "position")
+	self.vertex_texcoord_stream = buffer.get_stream(buf, "texcoord0")
+	self.vertex_tint_stream = buffer.get_stream(buf, "tint")
+	
+	local offset_uv_y = 0
+	local vertex_offset = 1
+	local vertex_loop_index = 1
+	
+	for i = 1, self.points_count*2 do
+
+		if vertex_loop_index > 5 then
+			vertex_loop_index = 1
+		end
+		if (i-1) % 4 == 0 then
+			offset_uv_y = offset_uv_y + 1
+		end
+		if vertex_loop_index == 1 then
+			self.vertex_texcoord_stream[vertex_offset + 0] = 1
+			self.vertex_texcoord_stream[vertex_offset + 1] = (offset_uv_y + 0)/(self.points_count-1)
+			
+		elseif vertex_loop_index == 2 then
+			self.vertex_texcoord_stream[vertex_offset + 0] = 0
+			self.vertex_texcoord_stream[vertex_offset + 1] = (offset_uv_y + 0)/(self.points_count-1)
+			
+		elseif vertex_loop_index == 3 then
+			self.vertex_texcoord_stream[vertex_offset + 0] = 1
+			self.vertex_texcoord_stream[vertex_offset + 1] = (offset_uv_y + 1)/(self.points_count-1)
+			
+		elseif vertex_loop_index == 4 then
+			self.vertex_texcoord_stream[vertex_offset + 0] = 0
+			self.vertex_texcoord_stream[vertex_offset + 1] = (offset_uv_y + 1)/(self.points_count-1)
+		end
+		vertex_offset = vertex_offset + 2
+		vertex_loop_index = vertex_loop_index + 1
+	end
+end
+
 function M.init_props(self)
 	assert(bit.band(self.points_count, (self.points_count - 1)) == 0, "Points count should be 16, 32, 64 (power of two).")
 
@@ -180,21 +236,7 @@ function M.init_props(self)
 end
 
 function M.init_vars(self)
-	self._tex_h = 8
-	self._tex_w = self.points_count
-	self._tex_w4 = self._tex_w * 4 -- optimization, see write_vectors
 	self._data_w = self.points_count
-	self._resource_path = go.get(self.trail_model_url, "texture0")
-	self._tex_header = { 
-		width = self._tex_w,
-		height = self._tex_h,
-		type = resource.TEXTURE_TYPE_2D,
-		format = resource.TEXTURE_FORMAT_RGBA,
-		num_mip_maps = 1
-	}
-
-	model.set_constant(self.trail_model_url, "tex_size", vmath.vector4(self._tex_w, self._tex_h, 0, 0))
-
 	self._last_pos = M.get_position(self)
 end
 
@@ -301,23 +343,6 @@ function M.split_segments_by_length(self)
 	end
 end
 
-function M.update_texture(self)
-	resource.set_texture(self._resource_path, self._tex_header, self._tex_buffer)
-
-	-- DO NOT REMOVE
-	-- if write_texture then
-	-- 	print("Write data.png")
-	-- 	local rgba = buffer.get_bytes(self._tex_buffer, hash("rgba"))
-	-- 	local bytes = png.encode_rgba(rgba, self._tex_w, self._tex_h)
-	-- 	local f = io.open("hyper_trails/textures/data/texture.png", "wb")
-	-- 	f:write(bytes)
-	-- 	f:flush()
-	-- 	f:close()
-	-- 	-- + flip vertical!
-	-- 	write_texture = false
-	-- end
-end
-
 function on_input(self, action_id, action)
 	if action_id == hash("profile") and action.pressed then
 		msg.post("@system:", "toggle_profile")
@@ -325,7 +350,6 @@ function on_input(self, action_id, action)
 		msg.post("@system:", "toggle_physics_debug")
 	end
 end
-
 
 function M.update_uv_opts(self)
 	if self.texture_tiling then
@@ -339,34 +363,6 @@ function M.update_uv_opts(self)
 		end
 		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, count, offset))
 	end
-end
-
-function M.write_tint(self, p_x, tint)
-	local s = self._tex_stream
-	local p_y = 5
-
-	local i = (p_y - 1) * self._tex_w4 + (p_x - 1) * 4 + 1
-	s[i + 0] = tint.x * 255
-	s[i + 1] = tint.y * 255
-	s[i + 2] = tint.z * 255
-	s[i + 3] = tint.w * 255
-end
-
-function M.write_vectors(self, p_x, v_1, v_2)
-	local s = self._tex_stream
-	local w4 = self._tex_w4
-
-	local i = (p_x - 1) * 4 + 1
-	hyper_fmath.encode_rgba_float_to_buffer(v_1.x, s, i)
-
-	i = i + w4 -- next line
-	hyper_fmath.encode_rgba_float_to_buffer(v_1.y, s, i)
-
-	i = i + w4 -- next line
-	hyper_fmath.encode_rgba_float_to_buffer(v_2.x, s, i)
-
-	i = i + w4 -- next line
-	hyper_fmath.encode_rgba_float_to_buffer(v_2.y, s, i)
 end
 
 return M
