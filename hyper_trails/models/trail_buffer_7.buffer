@@ -1,0 +1,20 @@
+[
+  {
+    "name": "position",
+    "type": "float32",
+    "count": 3,
+    "data": []
+  },
+  {
+    "name": "texcoord0",
+    "type": "float32",
+    "count": 2,
+    "data": []
+  },
+  {
+    "name": "tint",
+    "type": "float32",
+    "count": 4,
+    "data": []
+  }
+]

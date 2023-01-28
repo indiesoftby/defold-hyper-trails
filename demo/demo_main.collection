@@ -980,7 +980,7 @@ embedded_instances {
   "}\n"
   "components {\n"
   "  id: \"trail_maker\"\n"
-  "  component: \"/hyper_trails/trail_maker.script\"\n"
+  "  component: \"/hyper_trails/trail_maker_new.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -991,11 +991,6 @@ embedded_instances {
   "    y: 0.0\n"
   "    z: 0.0\n"
   "    w: 1.0\n"
-  "  }\n"
-  "  properties {\n"
-  "    id: \"use_world_position\"\n"
-  "    value: \"true\"\n"
-  "    type: PROPERTY_TYPE_BOOLEAN\n"
   "  }\n"
   "  properties {\n"
   "    id: \"fade_tail_alpha\"\n"
@@ -1027,20 +1022,16 @@ embedded_instances {
   "}\n"
   "embedded_components {\n"
   "  id: \"trail_model\"\n"
-  "  type: \"model\"\n"
-  "  data: \"mesh: \\\"/hyper_trails/models/trail_16.dae\\\"\\n"
-  "material: \\\"/hyper_trails/materials/trail.material\\\"\\n"
-  "textures: \\\"/hyper_trails/textures/data/texture0_5.png\\\"\\n"
+  "  type: \"mesh\"\n"
+  "  data: \"material: \\\"/hyper_trails/materials_new/trail.material\\\"\\n"
+  "vertices: \\\"/hyper_trails/models/trail_model.buffer\\\"\\n"
   "textures: \\\"/hyper_trails/textures/white.png\\\"\\n"
-  "skeleton: \\\"\\\"\\n"
-  "animations: \\\"\\\"\\n"
-  "default_animation: \\\"\\\"\\n"
-  "name: \\\"unnamed\\\"\\n"
+  "primitive_type: PRIMITIVE_TRIANGLE_STRIP\\n"
   "\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
-  "    z: -0.1\n"
+  "    z: 0.0\n"
   "  }\n"
   "  rotation {\n"
   "    x: 0.0\n"
@@ -1542,13 +1533,13 @@ embedded_instances {
   "  id: \"trail_model\"\n"
   "  type: \"mesh\"\n"
   "  data: \"material: \\\"/hyper_trails/materials_new/trail.material\\\"\\n"
-  "vertices: \\\"/hyper_trails/models/box.buffer\\\"\\n"
+  "vertices: \\\"/hyper_trails/models/trail_model.buffer\\\"\\n"
   "textures: \\\"/demo/assets/images/logo_text_texture.png\\\"\\n"
   "primitive_type: PRIMITIVE_TRIANGLE_STRIP\\n"
   "\"\n"
   "  position {\n"
   "    x: 0.0\n"
-  "    y: -57.764\n"
+  "    y: 0.0\n"
   "    z: 0.0\n"
   "  }\n"
   "  rotation {\n"
@@ -1562,6 +1553,212 @@ embedded_instances {
   position {
     x: 322.284
     y: 352.416
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "logo_long1"
+  data: "components {\n"
+  "  id: \"logo_long\"\n"
+  "  component: \"/demo/logo_long.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  property_decls {\n"
+  "  }\n"
+  "}\n"
+  "components {\n"
+  "  id: \"trail_maker\"\n"
+  "  component: \"/hyper_trails/trail_maker_new.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"points_count\"\n"
+  "    value: \"64.0\"\n"
+  "    type: PROPERTY_TYPE_NUMBER\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"points_limit\"\n"
+  "    value: \"50.0\"\n"
+  "    type: PROPERTY_TYPE_NUMBER\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"fade_tail_alpha\"\n"
+  "    value: \"64.0\"\n"
+  "    type: PROPERTY_TYPE_NUMBER\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"trail_model_url\"\n"
+  "    value: \"#trail_model1\"\n"
+  "    type: PROPERTY_TYPE_URL\n"
+  "  }\n"
+  "  property_decls {\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"tile_set: \\\"/demo/assets/atlases/main.atlas\\\"\\n"
+  "default_animation: \\\"logo_small\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"trail_model\"\n"
+  "  type: \"mesh\"\n"
+  "  data: \"material: \\\"/hyper_trails/materials_new/trail.material\\\"\\n"
+  "vertices: \\\"/hyper_trails/models/trail_model.buffer\\\"\\n"
+  "textures: \\\"/demo/assets/images/logo_text_texture.png\\\"\\n"
+  "primitive_type: PRIMITIVE_TRIANGLE_STRIP\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 480.0
+    y: 120.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "trails_pool"
+  data: "components {\n"
+  "  id: \"trails_pool\"\n"
+  "  component: \"/hyper_trails/trails_pool_16.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  property_decls {\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "factory"
+  data: "components {\n"
+  "  id: \"random_spawn\"\n"
+  "  component: \"/hyper_trails/random_spawn.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  property_decls {\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"factory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/hyper_trails/hyper_trail.go\\\"\\n"
+  "load_dynamically: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 294.879
+    y: 259.437
     z: 0.0
   }
   rotation {

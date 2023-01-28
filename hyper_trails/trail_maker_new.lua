@@ -24,7 +24,7 @@ end
 
 function M.draw_trail(self)
 	M.date_to_buffers(self)
-	-- M.update_uv_opts(self)
+	M.update_uv_opts(self)
 end
 
 local function set_vector3_to_stream(stream, vector, index)
@@ -56,10 +56,8 @@ function M.date_to_buffers(self)
 		set_vector4_to_stream(self.vertex_tint_stream, point_data.tint, offset_by_float + 0)
 		set_vector4_to_stream(self.vertex_tint_stream, point_data.tint, offset_by_float + 1)
 		
-		print(point_data.tint)
-		
 		offset_by_float = offset_by_float + 2
-		trail_point_position = trail_point_position + point_data.dpos -- next point position
+		trail_point_position = trail_point_position + point_data.dtpos -- next point position
 	end
 end
 
@@ -88,7 +86,7 @@ function M.follow_position(self, dt)
 	local add_new_point = true
 	if self.segment_length_min > 0 then 
 		if head_point.dlength < self.segment_length_min then
-			diff_pos = diff_pos + head_point.dpos
+			diff_pos = diff_pos + head_point.dtpos
 			add_new_point = false
 			new_point = head_point
 			head_point = prev_point
@@ -107,7 +105,7 @@ function M.follow_position(self, dt)
 		data_arr[i].lifetime = data_arr[i].lifetime + dt
 	end
 
-	new_point.dpos = diff_pos
+	new_point.dtpos = diff_pos
 	new_point.dlength = vmath.length(diff_pos)
 	new_point.angle = M.make_angle(diff_pos)
 	new_point.tint = vmath.vector4(self.trail_tint_color)
@@ -167,8 +165,8 @@ function M.init_data_points(self)
 		tint.w = 0
 
 		self._data[i] = {
-			dpos = vmath.vector3(), -- vector3, difference between this and previous point
-			dlength = 0, -- length of dpos
+			dtpos = vmath.vector3(), -- vector3, difference between this and previous point
+			dlength = 0, -- length of dtpos
 			angle = 0, -- radians
 			tint = tint, -- vector4
 			width = self.trail_width, -- trail width
@@ -180,50 +178,27 @@ function M.init_data_points(self)
 end
 
 function M.init_buffers(self)
-	local buf = buffer.create(self.points_count*2, {
+	self.buf = buffer.create(self.points_count*2, {
 		{ name = hash("position"), type=buffer.VALUE_TYPE_FLOAT32, count = 3 },
 		{ name = hash("texcoord0"), type=buffer.VALUE_TYPE_FLOAT32, count = 2 },
 		{ name = hash("tint"), type=buffer.VALUE_TYPE_FLOAT32, count = 4 },
 	})
-	
-	local res = go.get("#trail_model", "vertices")
-	resource.set_buffer(res, buf)
-	buf = resource.get_buffer(res)
-	
-	self.vertex_position_stream = buffer.get_stream(buf, "position")
-	self.vertex_texcoord_stream = buffer.get_stream(buf, "texcoord0")
-	self.vertex_tint_stream = buffer.get_stream(buf, "tint")
-	
-	local offset_uv_y = 0
-	local vertex_offset = 1
-	local vertex_loop_index = 1
-	
-	for i = 1, self.points_count*2 do
 
-		if vertex_loop_index > 5 then
-			vertex_loop_index = 1
-		end
-		if (i-1) % 4 == 0 then
-			offset_uv_y = offset_uv_y + 1
-		end
-		if vertex_loop_index == 1 then
-			self.vertex_texcoord_stream[vertex_offset + 0] = 1
-			self.vertex_texcoord_stream[vertex_offset + 1] = (offset_uv_y + 0)/(self.points_count-1)
-			
-		elseif vertex_loop_index == 2 then
-			self.vertex_texcoord_stream[vertex_offset + 0] = 0
-			self.vertex_texcoord_stream[vertex_offset + 1] = (offset_uv_y + 0)/(self.points_count-1)
-			
-		elseif vertex_loop_index == 3 then
-			self.vertex_texcoord_stream[vertex_offset + 0] = 1
-			self.vertex_texcoord_stream[vertex_offset + 1] = (offset_uv_y + 1)/(self.points_count-1)
-			
-		elseif vertex_loop_index == 4 then
-			self.vertex_texcoord_stream[vertex_offset + 0] = 0
-			self.vertex_texcoord_stream[vertex_offset + 1] = (offset_uv_y + 1)/(self.points_count-1)
-		end
-		vertex_offset = vertex_offset + 2
-		vertex_loop_index = vertex_loop_index + 1
+	-- it's mabe potential future problem :|
+	-- it's trip is not need resource.set_buffer every frame 
+	resource.set_buffer(self.mesh_vertices_resource, self.buf)
+	self.buf = resource.get_buffer(self.mesh_vertices_resource)
+	-- 
+	
+	go.set("#trail_model", "vertices", self.mesh_vertices_resource)
+	self.vertex_position_stream = buffer.get_stream(self.buf, "position")
+	self.vertex_texcoord_stream = buffer.get_stream(self.buf, "texcoord0")
+	self.vertex_tint_stream = buffer.get_stream(self.buf, "tint")
+
+	for rev_index = self.points_count, 1, -1  do
+		local new_y = (rev_index - 1)/(self.points_count - 1)
+		local forw_index = self.points_count - rev_index + 1
+		set_vector4_to_stream(self.vertex_texcoord_stream, vmath.vector4(1, new_y, 0, new_y), forw_index)
 	end
 end
 
@@ -255,7 +230,7 @@ function M.make_vectors_from_angle(self, row)
 	-- TEMPORARILY DISABLED
 	-- if row.prev ~= nil and row.prev.v_1 ~= nil then
 	-- 	local prev = row.prev
-	-- 	local intersects = hyper_geometry.lines_intersects(row.v_1, prev.v_1 + row.dpos, row.v_2, prev.v_2 + row.dpos, false)
+	-- 	local intersects = hyper_geometry.lines_intersects(row.v_1, prev.v_1 + row.dtpos, row.v_2, prev.v_2 + row.dtpos, false)
 	-- 	if intersects then
 	-- 		local v = row.v_2
 	-- 		row.v_2 = row.v_1
@@ -266,12 +241,12 @@ end
 
 function M.pull_not_used_points(self, data_arr, data_from)
 	local last_point = data_arr[data_from]
-	last_point.dpos.x = 0
-	last_point.dpos.y = 0
+	last_point.dtpos.x = 0
+	last_point.dtpos.y = 0
 	for i = 1, data_from - 1 do
 		local d = data_arr[i]
-		d.dpos.x = 0
-		d.dpos.y = 0
+		d.dtpos.x = 0
+		d.dtpos.y = 0
 		d.dlength = 0
 		d.width = 0
 		d.tint.w = 0
@@ -286,12 +261,12 @@ function M.shrink_length(self, dt, data_arr, data_from)
 		if d.dlength ~= 0 then
 			if d.dlength > to_shrink then
 				d.dlength = d.dlength - to_shrink
-				d.dpos = vmath.normalize(d.dpos) * d.dlength
+				d.dtpos = vmath.normalize(d.dtpos) * d.dlength
 				break
 			else
 				to_shrink = to_shrink - d.dlength
-				d.dpos.x = 0
-				d.dpos.y = 0
+				d.dtpos.x = 0
+				d.dtpos.y = 0
 				d.dlength = 0
 			end
 		end
@@ -317,10 +292,10 @@ function M.split_segments_by_length(self)
 
 	while head_point.dlength > self.segment_length_max do
 		local next_dlength = head_point.dlength - self.segment_length_max
-		local normal = vmath.normalize(head_point.dpos)
+		local normal = vmath.normalize(head_point.dtpos)
 
 		head_point.dlength = self.segment_length_max
-		head_point.dpos = normal * head_point.dlength
+		head_point.dtpos = normal * head_point.dlength
 
 		local new_point = data_arr[1]
 		-- shift data array in left direction by one position
@@ -328,9 +303,9 @@ function M.split_segments_by_length(self)
 			data_arr[i] = data_arr[i + 1]
 		end
 
-		new_point.dpos = normal * next_dlength
+		new_point.dtpos = normal * next_dlength
 		new_point.dlength = next_dlength
-		new_point.angle = M.make_angle(new_point.dpos)
+		new_point.angle = M.make_angle(new_point.dtpos)
 		new_point.tint = vmath.vector4(self.trail_tint_color)
 		new_point.width = self.trail_width
 		new_point.lifetime = 0
@@ -351,17 +326,15 @@ function on_input(self, action_id, action)
 	end
 end
 
+-- uv_opts.x - repeat texture count, yzw - unused
 function M.update_uv_opts(self)
+	local uv_opts = vmath.vector4(0)
+	
 	if self.texture_tiling then
-		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(1, 0, 1, 0))
+		uv_opts.x = self.points_limit
 	else
-		local count = self.points_count
-		local offset = 0
-		if self.points_limit > 0 then
-			count = self.points_limit
-			offset = -(self.points_count - self.points_limit)
-		end
-		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, count, offset))
+		uv_opts.x = 1
+		model.set_constant(self.trail_model_url, "uv_opts", uv_opts)
 	end
 end
 

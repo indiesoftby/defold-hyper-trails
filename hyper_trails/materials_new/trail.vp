@@ -2,7 +2,7 @@ attribute mediump vec3 position;
 attribute mediump vec2 texcoord0;
 attribute lowp vec4 tint;
 
-// uniform mediump vec4 uv_opts;
+uniform mediump vec4 uv_opts;
 uniform mediump mat4 world_view_proj;
 
 
@@ -11,6 +11,7 @@ varying lowp vec4 var_tint;
 
 void main() {
     var_tint = tint;
-    var_texcoord0 = texcoord0;// vec2(texcoord0.x,texcoord0.y); //* uv_opts.x + (position.x + uv_opts.w) / uv_opts.z * uv_opts.y/3.0);
+    var_texcoord0.x = texcoord0.x;
+    var_texcoord0.y = texcoord0.y * uv_opts.x;
     gl_Position = world_view_proj * vec4(position, 1.0);
 }

@@ -24,7 +24,7 @@ local function reset_trail(self)
 end
 
 function init(self)
-	reset_trail(self)
+	msg.post("/trails_pool#trails_pool", "get_buffer")
 end
 
 local function update_trail(self, dt)
@@ -45,7 +45,17 @@ local RESET = hash("reset")
 function on_message(self, message_id, message, sender)
 	if message_id == UPDATE then
 		update_trail(self, message.dt or self.dt)
+		
 	elseif message_id == RESET then
 		reset_trail(self)
+		
+	elseif message_id == hash("buffer_index") then
+		self.mesh_vertices_resource = go.get("/trails_pool#trails_pool", "buffer_" .. message.index)
+		reset_trail(self)
+		self.buffer_index = message.index
 	end
+end
+
+function final(self)
+	msg.post("/trails_pool#trails_pool", "releace_buffer", {index=self.buffer_index})
 end

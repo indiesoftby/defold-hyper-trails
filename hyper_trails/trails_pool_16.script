@@ -1,0 +1,37 @@
+go.property("buffer_1", resource.buffer("/hyper_trails/models/trail_buffer_1.buffer"))
+go.property("buffer_2", resource.buffer("/hyper_trails/models/trail_buffer_2.buffer"))
+go.property("buffer_3", resource.buffer("/hyper_trails/models/trail_buffer_3.buffer"))
+go.property("buffer_4", resource.buffer("/hyper_trails/models/trail_buffer_4.buffer"))
+go.property("buffer_5", resource.buffer("/hyper_trails/models/trail_buffer_5.buffer"))
+go.property("buffer_6", resource.buffer("/hyper_trails/models/trail_buffer_6.buffer"))
+go.property("buffer_7", resource.buffer("/hyper_trails/models/trail_buffer_7.buffer"))
+go.property("buffer_8", resource.buffer("/hyper_trails/models/trail_buffer_8.buffer"))
+go.property("buffer_9", resource.buffer("/hyper_trails/models/trail_buffer_9.buffer"))
+go.property("buffer_10", resource.buffer("/hyper_trails/models/trail_buffer_10.buffer"))
+go.property("buffer_11", resource.buffer("/hyper_trails/models/trail_buffer_11.buffer"))
+go.property("buffer_12", resource.buffer("/hyper_trails/models/trail_buffer_12.buffer"))
+go.property("buffer_13", resource.buffer("/hyper_trails/models/trail_buffer_13.buffer"))
+go.property("buffer_14", resource.buffer("/hyper_trails/models/trail_buffer_14.buffer"))
+go.property("buffer_15", resource.buffer("/hyper_trails/models/trail_buffer_15.buffer"))
+go.property("buffer_16", resource.buffer("/hyper_trails/models/trail_buffer_16.buffer"))
+
+function init(self)
+	self.pool = {}
+	for i = 1, 16 do
+		self.pool[i] = 1 -- 1 from not empty
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("get_buffer") then
+		local unsued_buffer = next(self.pool)
+		if not unsued_buffer then
+			print()
+		end
+		self.pool[unsued_buffer] = nil
+		msg.post(sender, "buffer_index", {index=unsued_buffer})
+		print(#self.pool)
+	elseif message_id == hash("releace_buffer") then
+		self.pool[message.index] = message.index
+	end
+end
