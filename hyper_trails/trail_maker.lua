@@ -190,7 +190,7 @@ function M.init_buffers(self)
 	self.buf = resource.get_buffer(self.mesh_vertices_resource)
 	-- 
 	
-	go.set("#trail_model", "vertices", self.mesh_vertices_resource)
+	go.set(self.trail_model_url, "vertices", self.mesh_vertices_resource)
 	self.vertex_position_stream = buffer.get_stream(self.buf, "position")
 	self.vertex_texcoord_stream = buffer.get_stream(self.buf, "texcoord0")
 	self.vertex_tint_stream = buffer.get_stream(self.buf, "tint")
