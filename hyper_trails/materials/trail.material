@@ -14,16 +14,6 @@ vertex_constants {
   }
 }
 vertex_constants {
-  name: "tex_size"
-  type: CONSTANT_TYPE_USER
-  value {
-    x: 16.0
-    y: 8.0
-    z: 0.0
-    w: 0.0
-  }
-}
-vertex_constants {
   name: "uv_opts"
   type: CONSTANT_TYPE_USER
   value {
@@ -34,16 +24,10 @@ vertex_constants {
   }
 }
 samplers {
-  name: "texture0"
-  wrap_u: WRAP_MODE_CLAMP_TO_EDGE
-  wrap_v: WRAP_MODE_CLAMP_TO_EDGE
-  filter_min: FILTER_MODE_MIN_NEAREST
-  filter_mag: FILTER_MODE_MAG_NEAREST
-}
-samplers {
   name: "texture1"
-  wrap_u: WRAP_MODE_CLAMP_TO_EDGE
-  wrap_v: WRAP_MODE_CLAMP_TO_EDGE
+  wrap_u: WRAP_MODE_REPEAT
+  wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
+  max_anisotropy: 1.0
 }

@@ -22,34 +22,42 @@ function M.queue_late_update()
 	physics.raycast_async(VECTOR3_EMPTY, VECTOR3_ONE, EMPTY_TABLE) 
 end
 
-function M.create_texture(self)
-	self._tex_buffer = buffer.create(self._tex_w * self._tex_h, { 
-		{
-			name = hash("rgba"), 
-			type = buffer.VALUE_TYPE_UINT8, 
-			count = 4
-		}
-	})
-	
-	self._tex_stream = buffer.get_stream(self._tex_buffer, hash("rgba"))
-end
-
 function M.draw_trail(self)
-	M.encode_data_to_texture(self)
+	M.date_to_buffers(self)
 	M.update_uv_opts(self)
-	M.update_texture(self)
 end
 
-function M.encode_data_to_texture(self)
-	local p = vmath.vector3()
+local function set_vector3_to_stream(stream, vector, index)
+	index = index * 3 - 2
+	stream[index + 0] = vector.x
+	stream[index + 1] = vector.y
+	stream[index + 2] = vector.z
+end
 
-	for i = self._data_w, 1, -1 do
-		local d = self._data[i]
+local function set_vector4_to_stream(stream, vector, index)
+	index = index * 4 - 3
+	stream[index + 0] = vector.x
+	stream[index + 1] = vector.y
+	stream[index + 2] = vector.z
+	stream[index + 3] = vector.w
+end
 
-		M.write_vectors(self, i, p + d.v_1, p + d.v_2)
-		M.write_tint(self, i, d.tint)
+function M.date_to_buffers(self)
+	local trail_point_position = vmath.vector3()
+	local offset_by_float = 1
+	for i = self._data_w, 1, -1 do 
+		local point_data = self._data[i]
+		local vertex_up   = trail_point_position + point_data.v_1
+		local vertex_down = trail_point_position + point_data.v_2
+
+		set_vector3_to_stream(self.vertex_position_stream, vertex_up,   offset_by_float + 0)
+		set_vector3_to_stream(self.vertex_position_stream, vertex_down, offset_by_float + 1)
 		
-		p = p + d.dpos
+		set_vector4_to_stream(self.vertex_tint_stream, point_data.tint, offset_by_float + 0)
+		set_vector4_to_stream(self.vertex_tint_stream, point_data.tint, offset_by_float + 1)
+		
+		offset_by_float = offset_by_float + 2
+		trail_point_position = trail_point_position + point_data.dtpos -- next point position
 	end
 end
 
@@ -78,7 +86,7 @@ function M.follow_position(self, dt)
 	local add_new_point = true
 	if self.segment_length_min > 0 then 
 		if head_point.dlength < self.segment_length_min then
-			diff_pos = diff_pos + head_point.dpos
+			diff_pos = diff_pos + head_point.dtpos
 			add_new_point = false
 			new_point = head_point
 			head_point = prev_point
@@ -93,11 +101,11 @@ function M.follow_position(self, dt)
 		end
 	end
 
-	for i = 1, self._data_w do
-		data_arr[i].lifetime = data_arr[i].lifetime + dt
-	end
+	-- for i = 1, self._data_w do -- unused
+	-- 	data_arr[i].lifetime = data_arr[i].lifetime + dt 
+	-- end
 
-	new_point.dpos = diff_pos
+	new_point.dtpos = diff_pos
 	new_point.dlength = vmath.length(diff_pos)
 	new_point.angle = M.make_angle(diff_pos)
 	new_point.tint = vmath.vector4(self.trail_tint_color)
@@ -111,11 +119,9 @@ function M.follow_position(self, dt)
 	M.split_segments_by_length(self)
 
 	local data_limit = self._data_w
-	
 	if self.points_limit > 0 then
 		data_limit = self.points_limit
 	end
-	
 	local data_from = self._data_w - data_limit + 1
 
 	if self.shrink_length_per_sec > 0 then
@@ -159,8 +165,8 @@ function M.init_data_points(self)
 		tint.w = 0
 
 		self._data[i] = {
-			dpos = vmath.vector3(), -- vector3, difference between this and previous point
-			dlength = 0, -- length of dpos
+			dtpos = vmath.vector3(), -- vector3, difference between this and previous point
+			dlength = 0, -- length of dtpos
 			angle = 0, -- radians
 			tint = tint, -- vector4
 			width = self.trail_width, -- trail width
@@ -168,6 +174,31 @@ function M.init_data_points(self)
 			prev = self._data[i - 1] -- link to the previous point
 		}
 		M.make_vectors_from_angle(self, self._data[i])
+	end
+end
+
+function M.init_buffers(self)
+	self.buf = buffer.create(self.points_count*2, {
+		{ name = hash("position"), type=buffer.VALUE_TYPE_FLOAT32, count = 3 },
+		{ name = hash("texcoord0"), type=buffer.VALUE_TYPE_FLOAT32, count = 2 },
+		{ name = hash("tint"), type=buffer.VALUE_TYPE_FLOAT32, count = 4 },
+	})
+
+	-- it's mabe potential future problem :|
+	-- it's trip is not need resource.set_buffer every frame 
+	resource.set_buffer(self.mesh_vertices_resource, self.buf)
+	self.buf = resource.get_buffer(self.mesh_vertices_resource)
+	-- 
+	
+	go.set("#trail_model", "vertices", self.mesh_vertices_resource)
+	self.vertex_position_stream = buffer.get_stream(self.buf, "position")
+	self.vertex_texcoord_stream = buffer.get_stream(self.buf, "texcoord0")
+	self.vertex_tint_stream = buffer.get_stream(self.buf, "tint")
+
+	for rev_index = self.points_count, 1, -1  do
+		local new_y = (rev_index - 1)/(self.points_count - 1)
+		local forw_index = self.points_count - rev_index + 1
+		set_vector4_to_stream(self.vertex_texcoord_stream, vmath.vector4(1, new_y, 0, new_y), forw_index)
 	end
 end
 
@@ -180,21 +211,7 @@ function M.init_props(self)
 end
 
 function M.init_vars(self)
-	self._tex_h = 8
-	self._tex_w = self.points_count
-	self._tex_w4 = self._tex_w * 4 -- optimization, see write_vectors
 	self._data_w = self.points_count
-	self._resource_path = go.get(self.trail_model_url, "texture0")
-	self._tex_header = { 
-		width = self._tex_w,
-		height = self._tex_h,
-		type = resource.TEXTURE_TYPE_2D,
-		format = resource.TEXTURE_FORMAT_RGBA,
-		num_mip_maps = 1
-	}
-
-	model.set_constant(self.trail_model_url, "tex_size", vmath.vector4(self._tex_w, self._tex_h, 0, 0))
-
 	self._last_pos = M.get_position(self)
 end
 
@@ -206,14 +223,15 @@ function M.make_vectors_from_angle(self, row)
 	local a = row.angle - math.pi / 2
 	local w = row.width / 2
 
-	row.v_1 = vmath.vector3(math.cos(a) * w, math.sin(a) * w, 0)
-	row.v_2 = vmath.vector3(math.cos(a + math.pi) * w, math.sin(a + math.pi) * w, 0)
+	local vector = vmath.vector3(math.cos(a), math.sin(a), 0) * w
+	row.v_1 = vector
+	row.v_2 = -vector
 
 	-- Trying to prevent crossing the points
 	-- TEMPORARILY DISABLED
 	-- if row.prev ~= nil and row.prev.v_1 ~= nil then
 	-- 	local prev = row.prev
-	-- 	local intersects = hyper_geometry.lines_intersects(row.v_1, prev.v_1 + row.dpos, row.v_2, prev.v_2 + row.dpos, false)
+	-- 	local intersects = hyper_geometry.lines_intersects(row.v_1, prev.v_1 + row.dtpos, row.v_2, prev.v_2 + row.dtpos, false)
 	-- 	if intersects then
 	-- 		local v = row.v_2
 	-- 		row.v_2 = row.v_1
@@ -224,12 +242,12 @@ end
 
 function M.pull_not_used_points(self, data_arr, data_from)
 	local last_point = data_arr[data_from]
-	last_point.dpos.x = 0
-	last_point.dpos.y = 0
+	last_point.dtpos.x = 0
+	last_point.dtpos.y = 0
 	for i = 1, data_from - 1 do
 		local d = data_arr[i]
-		d.dpos.x = 0
-		d.dpos.y = 0
+		d.dtpos.x = 0
+		d.dtpos.y = 0
 		d.dlength = 0
 		d.width = 0
 		d.tint.w = 0
@@ -244,12 +262,12 @@ function M.shrink_length(self, dt, data_arr, data_from)
 		if d.dlength ~= 0 then
 			if d.dlength > to_shrink then
 				d.dlength = d.dlength - to_shrink
-				d.dpos = vmath.normalize(d.dpos) * d.dlength
+				d.dtpos = vmath.normalize(d.dtpos) * d.dlength
 				break
 			else
 				to_shrink = to_shrink - d.dlength
-				d.dpos.x = 0
-				d.dpos.y = 0
+				d.dtpos.x = 0
+				d.dtpos.y = 0
 				d.dlength = 0
 			end
 		end
@@ -275,10 +293,10 @@ function M.split_segments_by_length(self)
 
 	while head_point.dlength > self.segment_length_max do
 		local next_dlength = head_point.dlength - self.segment_length_max
-		local normal = vmath.normalize(head_point.dpos)
+		local normal = vmath.normalize(head_point.dtpos)
 
 		head_point.dlength = self.segment_length_max
-		head_point.dpos = normal * head_point.dlength
+		head_point.dtpos = normal * head_point.dlength
 
 		local new_point = data_arr[1]
 		-- shift data array in left direction by one position
@@ -286,9 +304,9 @@ function M.split_segments_by_length(self)
 			data_arr[i] = data_arr[i + 1]
 		end
 
-		new_point.dpos = normal * next_dlength
+		new_point.dtpos = normal * next_dlength
 		new_point.dlength = next_dlength
-		new_point.angle = M.make_angle(new_point.dpos)
+		new_point.angle = M.make_angle(new_point.dtpos)
 		new_point.tint = vmath.vector4(self.trail_tint_color)
 		new_point.width = self.trail_width
 		new_point.lifetime = 0
@@ -301,23 +319,6 @@ function M.split_segments_by_length(self)
 	end
 end
 
-function M.update_texture(self)
-	resource.set_texture(self._resource_path, self._tex_header, self._tex_buffer)
-
-	-- DO NOT REMOVE
-	-- if write_texture then
-	-- 	print("Write data.png")
-	-- 	local rgba = buffer.get_bytes(self._tex_buffer, hash("rgba"))
-	-- 	local bytes = png.encode_rgba(rgba, self._tex_w, self._tex_h)
-	-- 	local f = io.open("hyper_trails/textures/data/texture.png", "wb")
-	-- 	f:write(bytes)
-	-- 	f:flush()
-	-- 	f:close()
-	-- 	-- + flip vertical!
-	-- 	write_texture = false
-	-- end
-end
-
 function on_input(self, action_id, action)
 	if action_id == hash("profile") and action.pressed then
 		msg.post("@system:", "toggle_profile")
@@ -326,47 +327,16 @@ function on_input(self, action_id, action)
 	end
 end
 
-
+-- uv_opts.x - repeat texture count, yzw - unused
 function M.update_uv_opts(self)
+	local uv_opts = vmath.vector4(0)
+	
 	if self.texture_tiling then
-		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(1, 0, 1, 0))
+		uv_opts.x = self.points_limit
 	else
-		local count = self.points_count
-		local offset = 0
-		if self.points_limit > 0 then
-			count = self.points_limit
-			offset = -(self.points_count - self.points_limit)
-		end
-		model.set_constant(self.trail_model_url, "uv_opts", vmath.vector4(0, 1, count, offset))
+		uv_opts.x = 1
+		model.set_constant(self.trail_model_url, "uv_opts", uv_opts)
 	end
-end
-
-function M.write_tint(self, p_x, tint)
-	local s = self._tex_stream
-	local p_y = 5
-
-	local i = (p_y - 1) * self._tex_w4 + (p_x - 1) * 4 + 1
-	s[i + 0] = tint.x * 255
-	s[i + 1] = tint.y * 255
-	s[i + 2] = tint.z * 255
-	s[i + 3] = tint.w * 255
-end
-
-function M.write_vectors(self, p_x, v_1, v_2)
-	local s = self._tex_stream
-	local w4 = self._tex_w4
-
-	local i = (p_x - 1) * 4 + 1
-	hyper_fmath.encode_rgba_float_to_buffer(v_1.x, s, i)
-
-	i = i + w4 -- next line
-	hyper_fmath.encode_rgba_float_to_buffer(v_1.y, s, i)
-
-	i = i + w4 -- next line
-	hyper_fmath.encode_rgba_float_to_buffer(v_2.x, s, i)
-
-	i = i + w4 -- next line
-	hyper_fmath.encode_rgba_float_to_buffer(v_2.y, s, i)
 end
 
 return M

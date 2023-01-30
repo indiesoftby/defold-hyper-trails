@@ -1,11 +1,10 @@
 function spawn()
-	local x = math.random(0, 500)
-	local y = math.random(0, 500)
-	local id = factory.create("#factory", vmath.vector3(x, y, 0))
-	go.animate(id, "position.y", go.PLAYBACK_ONCE_FORWARD, y + 300, go.EASING_LINEAR, 0.3)
-	
+	local pos = go.get_position()
+	local x = math.random(-100, 100)
+	local y = math.random(-100, 100)
+	local id = factory.create("#factory", vmath.vector3(pos.x + x, pos.y + y, 0))
 end
 
 function init(self)
-	-- timer.delay(0.1, true, spawn)
+	timer.delay(0.3, true, spawn)
 end

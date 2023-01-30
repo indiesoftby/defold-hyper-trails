@@ -18,20 +18,20 @@ go.property("buffer_16", resource.buffer("/hyper_trails/models/trail_buffer_16.b
 function init(self)
 	self.pool = {}
 	for i = 1, 16 do
-		self.pool[i] = 1 -- 1 from not empty
+		self.pool[i] = i -- 1 from not empty
 	end
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("get_buffer") then
-		local unsued_buffer = next(self.pool)
-		if not unsued_buffer then
-			print()
-		end
-		self.pool[unsued_buffer] = nil
+		-- local unsued_buffer = next(self.pool)
+		-- if not unsued_buffer then
+		-- 	print()
+		-- end
+		local unsued_buffer = table.remove(self.pool)
 		msg.post(sender, "buffer_index", {index=unsued_buffer})
 		print(#self.pool)
 	elseif message_id == hash("releace_buffer") then
-		self.pool[message.index] = message.index
+		table.insert(self.pool, message.index)
 	end
 end
