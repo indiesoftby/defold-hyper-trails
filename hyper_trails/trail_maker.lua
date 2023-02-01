@@ -23,7 +23,9 @@ function M.queue_late_update()
 end
 
 function M.draw_trail(self)
+	profiler.scope_begin("date_to_buffers")
 	M.date_to_buffers(self)
+	profiler.scope_end()
 	M.update_uv_opts(self)
 end
 
@@ -45,20 +47,22 @@ end
 function M.date_to_buffers(self)
 	local trail_point_position = vmath.vector3()
 	local offset_by_float = 1
+	profiler.scope_begin("set_vectors_to_stream")
 	for i = self._data_w, 1, -1 do 
 		local point_data = self._data[i]
 		local vertex_up   = trail_point_position + point_data.v_1
 		local vertex_down = trail_point_position + point_data.v_2
-
-		set_vector3_to_stream(self.vertex_position_stream, vertex_up,   offset_by_float + 0)
-		set_vector3_to_stream(self.vertex_position_stream, vertex_down, offset_by_float + 1)
+		faststream.set_vector3_to_stream(self.vertex_position_stream, offset_by_float + 0, vertex_up)
+		faststream.set_vector3_to_stream(self.vertex_position_stream, offset_by_float + 1, vertex_down)
 		
-		set_vector4_to_stream(self.vertex_tint_stream, point_data.tint, offset_by_float + 0)
-		set_vector4_to_stream(self.vertex_tint_stream, point_data.tint, offset_by_float + 1)
-		
+		faststream.set_vector4_to_stream(self.vertex_tint_stream, offset_by_float + 0, point_data.tint)
+		faststream.set_vector4_to_stream(self.vertex_tint_stream, offset_by_float + 1, point_data.tint)
+	
 		offset_by_float = offset_by_float + 2
 		trail_point_position = trail_point_position + point_data.dtpos -- next point position
 	end
+	profiler.scope_end()
+	resource.set_buffer(self.mesh_vertices_resource, self.buf)
 end
 
 function M.fade_tail(self, dt, data_arr, data_from)
@@ -186,8 +190,7 @@ function M.init_buffers(self)
 
 	-- it's mabe potential future problem :|
 	-- it's trip is not need resource.set_buffer every frame 
-	resource.set_buffer(self.mesh_vertices_resource, self.buf)
-	self.buf = resource.get_buffer(self.mesh_vertices_resource)
+	-- self.buf = resource.get_buffer(self.mesh_vertices_resource)
 	-- 
 	
 	go.set(self.trail_model_url, "vertices", self.mesh_vertices_resource)
