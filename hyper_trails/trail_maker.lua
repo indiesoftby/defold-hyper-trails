@@ -47,7 +47,7 @@ end
 function M.date_to_buffers(self)
 	local trail_point_position = vmath.vector3()
 	local offset_by_float = 1
-	profiler.scope_begin("set_vectors_to_stream")
+	-- profiler.scope_begin("set_vectors_to_stream")
 	for i = self._data_w, 1, -1 do 
 		local point_data = self._data[i]
 		local vertex_up   = trail_point_position + point_data.v_1
@@ -61,7 +61,7 @@ function M.date_to_buffers(self)
 		offset_by_float = offset_by_float + 2
 		trail_point_position = trail_point_position + point_data.dtpos -- next point position
 	end
-	profiler.scope_end()
+	-- profiler.scope_end()
 	resource.set_buffer(self.mesh_vertices_resource, self.buf)
 end
 
