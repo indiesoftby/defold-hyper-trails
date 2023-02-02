@@ -23,9 +23,9 @@ function M.queue_late_update()
 end
 
 function M.draw_trail(self)
-	profiler.scope_begin("date_to_buffers")
+	-- profiler.scope_begin("date_to_buffers")
 	M.date_to_buffers(self)
-	profiler.scope_end()
+	-- profiler.scope_end()
 	M.update_uv_opts(self)
 end
 
