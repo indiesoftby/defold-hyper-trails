@@ -23,9 +23,7 @@ function M.queue_late_update()
 end
 
 function M.draw_trail(self)
-	profiler.scope_begin("date_to_buffers")
 	M.date_to_buffers(self)
-	profiler.scope_end()
 	M.update_uv_opts(self)
 end
 
@@ -49,7 +47,6 @@ function M.date_to_buffers(self)
 	local offset_by_float = 1
 	local positions = {}
 	local tints = {}
-	-- profiler.scope_begin("set_vectors_to_table")
 	for i = self._data_w, 1, -1 do 
 		local point_data = self._data[i]
 		local vertex_up   = trail_point_position + point_data.v_1
@@ -63,11 +60,8 @@ function M.date_to_buffers(self)
 		offset_by_float = offset_by_float + 2
 		trail_point_position = trail_point_position + point_data.dtpos -- next point position
 	end
-	-- profiler.scope_end()
-	-- profiler.scope_begin("set_vectors_to_stream")
 	faststream.set_table(self.vertex_position_stream, positions)
 	faststream.set_table(self.vertex_tint_stream, tints)
-	-- profiler.scope_end()
 	resource.set_buffer(self.mesh_vertices_resource, self.buf)
 end
 
