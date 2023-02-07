@@ -11,6 +11,7 @@ go.property("fade_tail_alpha", 0)
 go.property("shrink_tail_width", false)
 go.property("shrink_length_per_sec", 0)
 go.property("texture_tiling", true)
+go.property("trails_pool", msg.url("trails_pool#trails_pool"))
 go.property("trail_model_url", msg.url("#trail_model"))
 go.property("auto_update", true)
 
@@ -24,7 +25,7 @@ end
 
 function init(self)
 	self.is_ready = false
-	msg.post("/trails_pool#trails_pool", "get_buffer")
+	msg.post(self.trails_pool, "get_buffer")
 end
 
 local function update_trail(self, dt)
@@ -53,7 +54,7 @@ function on_message(self, message_id, message, sender)
 		reset_trail(self)
 		
 	elseif message_id == hash("buffer_index") then
-		self.mesh_vertices_resource = go.get("/trails_pool#trails_pool", "buffer_" .. message.index)
+		self.mesh_vertices_resource = go.get(self.trails_pool, "buffer_" .. message.index)
 		reset_trail(self)
 		self.buffer_index = message.index
 		self.is_ready = true
@@ -61,5 +62,5 @@ function on_message(self, message_id, message, sender)
 end
 
 function final(self)
-	msg.post("/trails_pool#trails_pool", "releace_buffer", {index=self.buffer_index})
+	msg.post(self.trails_pool, "releace_buffer", {index=self.buffer_index})
 end
