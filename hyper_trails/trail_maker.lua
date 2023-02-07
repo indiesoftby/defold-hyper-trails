@@ -23,9 +23,9 @@ function M.queue_late_update()
 end
 
 function M.draw_trail(self)
-	-- profiler.scope_begin("date_to_buffers")
+	profiler.scope_begin("date_to_buffers")
 	M.date_to_buffers(self)
-	-- profiler.scope_end()
+	profiler.scope_end()
 	M.update_uv_opts(self)
 end
 
@@ -47,20 +47,26 @@ end
 function M.date_to_buffers(self)
 	local trail_point_position = vmath.vector3()
 	local offset_by_float = 1
-	-- profiler.scope_begin("set_vectors_to_stream")
+	local positions = {}
+	local tints = {}
+	-- profiler.scope_begin("set_vectors_to_table")
 	for i = self._data_w, 1, -1 do 
 		local point_data = self._data[i]
 		local vertex_up   = trail_point_position + point_data.v_1
 		local vertex_down = trail_point_position + point_data.v_2
-		faststream.set_vector3_to_stream(self.vertex_position_stream, offset_by_float + 0, vertex_up)
-		faststream.set_vector3_to_stream(self.vertex_position_stream, offset_by_float + 1, vertex_down)
+		positions[offset_by_float + 0] = vertex_up
+		positions[offset_by_float + 1] = vertex_down
+
+		tints[offset_by_float + 0] = point_data.tint
+		tints[offset_by_float + 1] = point_data.tint
 		
-		faststream.set_vector4_to_stream(self.vertex_tint_stream, offset_by_float + 0, point_data.tint)
-		faststream.set_vector4_to_stream(self.vertex_tint_stream, offset_by_float + 1, point_data.tint)
-	
 		offset_by_float = offset_by_float + 2
 		trail_point_position = trail_point_position + point_data.dtpos -- next point position
 	end
+	-- profiler.scope_end()
+	-- profiler.scope_begin("set_vectors_to_stream")
+	faststream.set_table(self.vertex_position_stream, positions)
+	faststream.set_table(self.vertex_tint_stream, tints)
 	-- profiler.scope_end()
 	resource.set_buffer(self.mesh_vertices_resource, self.buf)
 end
@@ -206,7 +212,7 @@ function M.init_buffers(self)
 end
 
 function M.init_props(self)
-	assert(bit.band(self.points_count, (self.points_count - 1)) == 0, "Points count should be 16, 32, 64 (power of two).")
+	-- assert(bit.band(self.points_count, (self.points_count - 1)) == 0, "Points count should be 16, 32, 64 (power of two).")
 
 	if self.points_limit > self.points_count then
 		self.points_limit = self.points_count

@@ -25,6 +25,7 @@ end
 function init(self)
 	self.is_ready = false
 	msg.post("/trails_pool#trails_pool", "get_buffer")
+	self.profiler = profiler or nil 
 end
 
 local function update_trail(self, dt)
