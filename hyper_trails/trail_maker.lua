@@ -335,11 +335,11 @@ function M.update_uv_opts(self)
 	local uv_opts = vmath.vector4(0)
 	
 	if self.texture_tiling then
-		uv_opts.x = self.points_limit
+		uv_opts.x = self.points_count
 	else
 		uv_opts.x = 1
-		model.set_constant(self.trail_model_url, "uv_opts", uv_opts)
 	end
+	model.set_constant(self.trail_model_url, "uv_opts", uv_opts)
 end
 
 return M
