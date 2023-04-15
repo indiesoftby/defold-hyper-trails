@@ -174,7 +174,7 @@ function M.init_buffers(self)
 
 	self.mesh_vertices_resource = resource.create_buffer("hyper_trails/models/trail_buffer_" .. go.get_id() ..".bufferc", { buffer = self.buf })
 
-	go.set(self.trail_model_url, "vertices", self.mesh_vertices_resource)
+	go.set(self.trail_mesh_url, "vertices", self.mesh_vertices_resource)
 	self.vertex_position_stream = buffer.get_stream(self.buf, "position")
 	self.vertex_texcoord_stream = buffer.get_stream(self.buf, "texcoord0")
 	self.vertex_tint_stream = buffer.get_stream(self.buf, "tint")
@@ -323,7 +323,7 @@ function M.update_uv_opts(self)
 	else
 		uv_opts.x = 1
 	end
-	model.set_constant(self.trail_model_url, "uv_opts", uv_opts)
+	model.set_constant(self.trail_mesh_url, "uv_opts", uv_opts)
 end
 
 return M
