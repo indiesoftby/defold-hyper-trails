@@ -27,21 +27,6 @@ function M.draw_trail(self)
 	M.update_uv_opts(self)
 end
 
-local function set_vector3_to_stream(stream, vector, index)
-	index = index * 3 - 2
-	stream[index + 0] = vector.x
-	stream[index + 1] = vector.y
-	stream[index + 2] = vector.z
-end
-
-local function set_vector4_to_stream(stream, vector, index)
-	index = index * 4 - 3
-	stream[index + 0] = vector.x
-	stream[index + 1] = vector.y
-	stream[index + 2] = vector.z
-	stream[index + 3] = vector.w
-end
-
 function M.date_to_buffers(self)
 	local trail_point_position = vmath.vector3()
 	local offset_by_float = 1
@@ -60,9 +45,8 @@ function M.date_to_buffers(self)
 		offset_by_float = offset_by_float + 2
 		trail_point_position = trail_point_position + point_data.dtpos -- next point position
 	end
-	faststream.set_table(self.vertex_position_stream, positions)
-	faststream.set_table(self.vertex_tint_stream, tints)
-	resource.set_buffer(self.mesh_vertices_resource, self.buf)
+	faststream.set_table_raw(self.vertex_position_stream, positions)
+	faststream.set_table_raw(self.vertex_tint_stream, tints)
 end
 
 function M.fade_tail(self, dt, data_arr, data_from)
@@ -188,26 +172,26 @@ function M.init_buffers(self)
 		{ name = hash("tint"), type=buffer.VALUE_TYPE_FLOAT32, count = 4 },
 	})
 
-	-- it's mabe potential future problem :|
-	-- it's trip is not need resource.set_buffer every frame 
-	-- self.buf = resource.get_buffer(self.mesh_vertices_resource)
-	-- 
-	
+	self.mesh_vertices_resource = resource.create_buffer("hyper_trails/models/trail_buffer_" .. go.get_id() ..".bufferc", { buffer = self.buf })
+
 	go.set(self.trail_model_url, "vertices", self.mesh_vertices_resource)
 	self.vertex_position_stream = buffer.get_stream(self.buf, "position")
 	self.vertex_texcoord_stream = buffer.get_stream(self.buf, "texcoord0")
 	self.vertex_tint_stream = buffer.get_stream(self.buf, "tint")
 
-	for rev_index = self.points_count, 1, -1  do
+	local texcoord = {}
+	for rev_index = self.points_count, 1, -1 do
 		local new_y = (rev_index - 1)/(self.points_count - 1)
 		local forw_index = self.points_count - rev_index + 1
-		set_vector4_to_stream(self.vertex_texcoord_stream, vmath.vector4(1, new_y, 0, new_y), forw_index)
+		table.insert(texcoord, 1)
+		table.insert(texcoord, new_y)
+		table.insert(texcoord, 0)
+		table.insert(texcoord, new_y)
 	end
+	faststream.set_table_universal(self.vertex_texcoord_stream, texcoord)
 end
 
 function M.init_props(self)
-	-- assert(bit.band(self.points_count, (self.points_count - 1)) == 0, "Points count should be 16, 32, 64 (power of two).")
-
 	if self.points_limit > self.points_count then
 		self.points_limit = self.points_count
 	end
