@@ -45,7 +45,7 @@ local UPDATE = hash("update")
 local RESET = hash("reset")
 
 function on_message(self, message_id, message, sender)
-	if message_id == UPDATE and self.is_ready then
+	if message_id == UPDATE then
 		update_trail(self, message.dt or self.dt)
 		
 	elseif message_id == RESET then
