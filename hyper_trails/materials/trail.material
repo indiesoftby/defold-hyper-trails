@@ -24,7 +24,7 @@ vertex_constants {
   }
 }
 samplers {
-  name: "texture1"
+  name: "texture0"
   wrap_u: WRAP_MODE_REPEAT
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR
