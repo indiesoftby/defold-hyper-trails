@@ -1,41 +1,15 @@
-attribute mediump vec4 position;
+attribute highp vec3 position;
 attribute mediump vec2 texcoord0;
+attribute lowp vec4 tint;
 
-uniform mediump mat4 world_view_proj;
-uniform mediump vec4 tex_size;
 uniform mediump vec4 uv_opts;
+uniform highp mat4 world_view_proj;
 
-uniform highp sampler2D texture0;
-//uniform lowp sampler2D texture1;
-
-varying lowp vec4 var_tint;
 varying mediump vec2 var_texcoord0;
+varying lowp vec4 var_tint;
 
-float decode_rgba_float(vec4 i)
-{
-    // return (i.x * 255.0 * 16777216.0 + i.y * 255.0 * 65536.0 + i.z * 255.0 * 256.0 + i.w * 255.0 - 2147483648.0) / 65536.0;
-    return 0.00389099 * i.w + 65280.0 * i.x + 255.0 * i.y + 0.996094 * i.z - 32768.0;
-}
-
-void main()
-{
-    // x coordinate from data texture
-    float u = position.x / tex_size.x;
-    float v1 = position.y / tex_size.y;
-    vec4 i1 = texture2D(texture0, vec2(u, v1));
-    float x = decode_rgba_float(i1);
-
-    // y coordinate from data texture
-    float v2 = (position.y + 1.0) / tex_size.y;
-    vec4 i2 = texture2D(texture0, vec2(u, v2));
-    float y = decode_rgba_float(i2);
-
-    // tint from data texture
-    float v3 = 4.0 / tex_size.y;
-    var_tint = texture2D(texture0, vec2(u, v3));
-
-    // uv calculation
-    var_texcoord0 = vec2(texcoord0.x, texcoord0.y * uv_opts.x + (position.x + uv_opts.w) / uv_opts.z * uv_opts.y);
-
-    gl_Position = world_view_proj * vec4(x, y, position.z, 1.0);
+void main() {
+    var_tint = tint;
+    var_texcoord0 = vec2(texcoord0.x, texcoord0.y * uv_opts.x);
+    gl_Position = world_view_proj * vec4(position, 1.0);
 }

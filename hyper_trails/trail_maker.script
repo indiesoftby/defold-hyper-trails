@@ -1,4 +1,3 @@
-
 local trail_maker = require("hyper_trails.trail_maker")
 
 go.property("use_world_position", false)
@@ -12,22 +11,19 @@ go.property("fade_tail_alpha", 0)
 go.property("shrink_tail_width", false)
 go.property("shrink_length_per_sec", 0)
 go.property("texture_tiling", true)
-go.property("trail_model_url", msg.url("#trail_model"))
+go.property("trail_mesh_url", msg.url("#trail_mesh"))
 go.property("auto_update", true)
 
 local function reset_trail(self)
 	trail_maker.init_vars(self)
+	trail_maker.init_buffers(self)
 	trail_maker.init_props(self)
-	trail_maker.create_texture(self)
 	trail_maker.init_data_points(self)
 	trail_maker.draw_trail(self)
 end
 
 function init(self)
 	reset_trail(self)
-end
-
-function final(self)
 end
 
 local function update_trail(self, dt)
@@ -51,4 +47,8 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == RESET then
 		reset_trail(self)
 	end
+end
+
+function final(self)
+	trail_maker.final(self)
 end

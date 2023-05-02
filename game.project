@@ -9,10 +9,12 @@ width = 960
 height = 540
 high_dpi = 1
 samples = 4
+update_frequency = 60
 
 [project]
 title = hyper_trails
-version = 1.1.0
+version = 1.2.0
+dependencies#0 = https://github.com/KorolevSoftware/defold-faststream/archive/refs/tags/beta_1.0.zip
 
 [library]
 include_dirs = hyper_trails

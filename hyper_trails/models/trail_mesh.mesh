@@ -1,0 +1,4 @@
+material: "/hyper_trails/materials/trail.material"
+vertices: "/hyper_trails/models/trail_mesh.buffer"
+textures: "/hyper_trails/textures/white.png"
+primitive_type: PRIMITIVE_TRIANGLE_STRIP
