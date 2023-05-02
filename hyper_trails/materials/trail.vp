@@ -10,7 +10,6 @@ varying lowp vec4 var_tint;
 
 void main() {
     var_tint = tint;
-    var_texcoord0.x = texcoord0.x;
-    var_texcoord0.y = texcoord0.y * uv_opts.x;
+    var_texcoord0 = vec2(texcoord0.x, texcoord0.y * uv_opts.x);
     gl_Position = world_view_proj * vec4(position, 1.0);
 }

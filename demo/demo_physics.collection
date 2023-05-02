@@ -164,7 +164,7 @@ embedded_instances {
   "  id: \"trail_model\"\n"
   "  type: \"mesh\"\n"
   "  data: \"material: \\\"/hyper_trails/materials/trail.material\\\"\\n"
-  "vertices: \\\"/hyper_trails/models/trail_model.buffer\\\"\\n"
+  "vertices: \\\"/hyper_trails/models/trail_mesh.buffer\\\"\\n"
   "textures: \\\"/hyper_trails/textures/white.png\\\"\\n"
   "primitive_type: PRIMITIVE_TRIANGLE_STRIP\\n"
   "\"\n"

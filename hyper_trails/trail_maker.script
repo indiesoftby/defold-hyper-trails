@@ -23,10 +23,7 @@ local function reset_trail(self)
 end
 
 function init(self)
-	timer.delay(0, false, function()
-		reset_trail(self)
-		print("Create:", go.get_id())
-	 end)
+	reset_trail(self)
 end
 
 local function update_trail(self, dt)
@@ -47,12 +44,11 @@ local RESET = hash("reset")
 function on_message(self, message_id, message, sender)
 	if message_id == UPDATE then
 		update_trail(self, message.dt or self.dt)
-		
 	elseif message_id == RESET then
 		reset_trail(self)
 	end
 end
 
 function final(self)
-	resource.release(self.mesh_vertices_resource)
+	trail_maker.final(self)
 end

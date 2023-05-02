@@ -1003,7 +1003,7 @@ embedded_instances {
   "  id: \"trail_mesh\"\n"
   "  type: \"mesh\"\n"
   "  data: \"material: \\\"/hyper_trails/materials/trail.material\\\"\\n"
-  "vertices: \\\"/hyper_trails/models/trail_model.buffer\\\"\\n"
+  "vertices: \\\"/hyper_trails/models/trail_mesh.buffer\\\"\\n"
   "textures: \\\"/demo/assets/images/logo_text_texture.png\\\"\\n"
   "primitive_type: PRIMITIVE_TRIANGLE_STRIP\\n"
   "\"\n"
