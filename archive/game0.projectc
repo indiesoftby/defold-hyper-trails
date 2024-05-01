@@ -57,6 +57,7 @@ default_texture_min_filter = linear
 default_texture_mag_filter = linear
 max_draw_calls = 1024
 max_characters = 8192
+max_font_batches = 128
 max_debug_vertices = 10000
 texture_profiles = /demo/assets/graphics/demo.texture_profiles
 verify_graphics_calls = 1
@@ -121,6 +122,7 @@ pre_renderered_icons = 0
 bundle_identifier = example.unnamed
 bundle_name = 
 infoplist = /builtins/manifests/ios/Info.plist
+privacymanifest = /builtins/manifests/ios/PrivacyInfo.xcprivacy
 default_language = en
 localizations = en
 
@@ -141,6 +143,7 @@ proguard =
 [osx]
 app_icon = 
 infoplist = /builtins/manifests/osx/Info.plist
+privacymanifest = /builtins/manifests/osx/PrivacyInfo.xcprivacy
 bundle_identifier = example.unnamed
 bundle_name = 
 bundle_version = 1
