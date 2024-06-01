@@ -195,6 +195,7 @@ sleep_between_server_updates = 0
 [liveupdate]
 settings = /liveupdate.settings
 enabled = 1
+mount_on_start = 1
 
 [tilemap]
 max_count = 16

@@ -384,14 +384,14 @@ function createWasm() {
 var tempDouble;
 var tempI64;
 var ASM_CONSTS = {
-  274144: function _() {
+  274624: function _() {
     if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
       console.log("%c    %c    Made with Defold    %c    %c    https://www.defold.com", "background: #fd6623; padding:5px 0; border: 5px;", "background: #272c31; color: #fafafa; padding:5px 0;", "background: #39a3e4; padding:5px 0;", "background: #ffffff; color: #000000; padding:5px 0;");
     } else {
       console.log("Made with Defold -=[ https://www.defold.com ]=-");
     }
   },
-  274572: function _($0) {
+  275052: function _($0) {
     var jsResult;
     var isSuccess = 1;
     try {
@@ -405,13 +405,13 @@ var ASM_CONSTS = {
     var stringOnWasmHeap = stringToNewUTF8(jsResult);
     return stringOnWasmHeap;
   },
-  274840: function _() {
+  275320: function _() {
     document.removeEventListener("click", Module.__defold_interaction_listener);
     document.removeEventListener("keyup", Module.__defold_interaction_listener);
     document.removeEventListener("touchend", Module.__defold_interaction_listener);
     Module.__defold_interaction_listener = undefined;
   },
-  275128: function _() {
+  275608: function _() {
     Module.__defold_interaction_listener = function () {
       _dmScript_RunInteractionCallback();
     };
@@ -4506,7 +4506,27 @@ function _dmDeviceJSOpen(bufferCount) {
       sampleRate: shared.audioCtx.sampleRate,
       bufferedTo: 0,
       bufferDuration: 0,
+      creatingTime: Date.now() / 1e3,
+      lastTimeInSuspendedState: Date.now() / 1e3,
+      suspendedBufferedTo: 0,
+      _isContextRunning: function _isContextRunning() {
+        var audioCtx = window._dmJSDeviceShared.audioCtx;
+        return audioCtx !== undefined && audioCtx.state == "running";
+      },
+      _getCurrentSuspendedTime: function _getCurrentSuspendedTime() {
+        if (!this._isContextRunning()) {
+          this.lastTimeInSuspendedState = Date.now() / 1e3;
+          return this.lastTimeInSuspendedState - this.creatingTime;
+        }
+        return 0;
+      },
       _queue: function _queue(samples, sample_count) {
+        var len = sample_count / this.sampleRate;
+        this.bufferDuration = len;
+        if (!this._isContextRunning()) {
+          this.suspendedBufferedTo += len;
+          return;
+        }
         var buf = shared.audioCtx.createBuffer(2, sample_count, this.sampleRate);
         var c0 = buf.getChannelData(0);
         var c1 = buf.getChannelData(1);
@@ -4517,7 +4537,6 @@ function _dmDeviceJSOpen(bufferCount) {
         var source = shared.audioCtx.createBufferSource();
         source.buffer = buf;
         source.connect(shared.audioCtx.destination);
-        var len = sample_count / this.sampleRate;
         var t = shared.audioCtx.currentTime;
         if (this.bufferedTo <= t) {
           source.start(t);
@@ -4526,11 +4545,15 @@ function _dmDeviceJSOpen(bufferCount) {
           source.start(this.bufferedTo);
           this.bufferedTo = this.bufferedTo + len;
         }
-        this.bufferDuration = len;
       },
       _freeBufferSlots: function _freeBufferSlots() {
-        if (this.bufferDuration == 0) return 1;
-        var ahead = this.bufferedTo - shared.audioCtx.currentTime;
+        var ahead = 0;
+        if (this._isContextRunning()) {
+          if (this.bufferDuration == 0) return 1;
+          ahead = this.bufferedTo - shared.audioCtx.currentTime;
+        } else {
+          ahead = this.suspendedBufferedTo - this._getCurrentSuspendedTime();
+        }
         var inqueue = Math.ceil(ahead / this.bufferDuration);
         if (inqueue < 0) {
           inqueue = 0;
@@ -4544,6 +4567,15 @@ function _dmDeviceJSOpen(bufferCount) {
     };
   }
   if (device != null) {
+    shared.audioCtx.onstatechanged = function () {
+      if (device._isContextRunning()) {
+        device.timeInSuspendedState = Date.now() / 1e3;
+      } else {
+        device.creatingTime = Date.now() / 1e3;
+        device.lastTimeInSuspendedState = Date.now() / 1e3;
+        device.suspendedBufferedTo = 0;
+      }
+    };
     shared.devices[id] = device;
     return id;
   }
@@ -8605,6 +8637,7 @@ var GLFW = {
       for (var i = 0; i < GLFW.keys.length; i++) {
         GLFW.keys[i] = 0;
       }
+      GLFW.buttons = 0;
     }
     if (GLFW.focusFunc) {
       getWasmTableEntry(GLFW.focusFunc)(focus);
@@ -9033,9 +9066,6 @@ function _glfwSwapBuffers() {
     if (GLFW.isFullscreen) {
       width = Math.floor(window.innerWidth * GLFW.dpi);
       height = Math.floor(window.innerHeight * GLFW.dpi);
-    } else {
-      width = Math.floor(width * GLFW.dpi);
-      height = Math.floor(height * GLFW.dpi);
     }
     GLFW.prevWidth = width;
     GLFW.prevHeight = height;
