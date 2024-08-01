@@ -384,14 +384,14 @@ function createWasm() {
 var tempDouble;
 var tempI64;
 var ASM_CONSTS = {
-  275728: function _() {
+  276480: function _() {
     if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
       console.log("%c    %c    Made with Defold    %c    %c    https://www.defold.com", "background: #fd6623; padding:5px 0; border: 5px;", "background: #272c31; color: #fafafa; padding:5px 0;", "background: #39a3e4; padding:5px 0;", "background: #ffffff; color: #000000; padding:5px 0;");
     } else {
       console.log("Made with Defold -=[ https://www.defold.com ]=-");
     }
   },
-  276156: function _($0) {
+  276908: function _($0) {
     var jsResult;
     var isSuccess = 1;
     try {
@@ -405,19 +405,25 @@ var ASM_CONSTS = {
     var stringOnWasmHeap = stringToNewUTF8(jsResult);
     return stringOnWasmHeap;
   },
-  276424: function _() {
+  277176: function _() {
     document.removeEventListener("click", Module.__defold_interaction_listener);
     document.removeEventListener("keyup", Module.__defold_interaction_listener);
     document.removeEventListener("touchend", Module.__defold_interaction_listener);
     Module.__defold_interaction_listener = undefined;
   },
-  276712: function _() {
+  277464: function _() {
     Module.__defold_interaction_listener = function () {
       _dmScript_RunInteractionCallback();
     };
     document.addEventListener("click", Module.__defold_interaction_listener);
     document.addEventListener("keyup", Module.__defold_interaction_listener);
     document.addEventListener("touchend", Module.__defold_interaction_listener);
+  },
+  277785: function _($0) {
+    Module.printErr(UTF8ToString($0));
+  },
+  277824: function _($0) {
+    Module.print(UTF8ToString($0));
   }
 };
 function ExitStatus(status) {
@@ -9447,7 +9453,7 @@ var wasmImports = {
   xa: __localtime_js,
   wa: __mktime_js,
   nh: __tzset_js,
-  E: _abort,
+  F: _abort,
   mh: _dmDeviceJSFreeBufferSlots,
   lh: _dmDeviceJSOpen,
   kh: _dmDeviceJSQueue,
@@ -9458,7 +9464,7 @@ var wasmImports = {
   fh: _dmSysGetUserPersistentDataRoot,
   eh: _dmSysGetUserPreferredLanguage,
   dh: _dmSysOpenURL,
-  O: _emscripten_asm_const_int,
+  E: _emscripten_asm_const_int,
   ch: _emscripten_cancel_main_loop,
   D: _emscripten_date_now,
   bh: _emscripten_get_heap_max,
@@ -9743,7 +9749,7 @@ var wasmImports = {
   th: _environ_get,
   sh: _environ_sizes_get,
   U: _exit,
-  F: _fd_close,
+  G: _fd_close,
   ra: _fd_read,
   za: _fd_seek,
   W: _fd_write,
@@ -9758,7 +9764,7 @@ var wasmImports = {
   Wb: _glBlendFunc,
   oa: _glBufferData,
   na: _glBufferSubData,
-  N: _glCheckFramebufferStatus,
+  O: _glCheckFramebufferStatus,
   Vb: _glClear,
   Ub: _glClearColor,
   Tb: _glClearDepthf,
@@ -9770,7 +9776,7 @@ var wasmImports = {
   l: _glCompressedTexSubImage2D,
   Qb: _glCompressedTexSubImage3D,
   la: _glCreateProgram,
-  M: _glCreateShader,
+  N: _glCreateShader,
   Pb: _glCullFace,
   ka: _glDeleteBuffers,
   Ob: _glDeleteFramebuffers,
@@ -9804,10 +9810,10 @@ var wasmImports = {
   ga: _glGetProgramInfoLog,
   r: _glGetProgramiv,
   fa: _glGetShaderInfoLog,
-  L: _glGetShaderiv,
+  M: _glGetShaderiv,
   y: _glGetString,
   vb: _glGetUniformLocation,
-  K: _glLinkProgram,
+  L: _glLinkProgram,
   ea: _glPixelStorei,
   ub: _glPolygonOffset,
   tb: _glReadPixels,
@@ -9822,7 +9828,7 @@ var wasmImports = {
   i: _glTexImage2D,
   mb: _glTexImage3D,
   lb: _glTexParameterf,
-  J: _glTexParameteri,
+  K: _glTexParameteri,
   j: _glTexSubImage2D,
   kb: _glTexSubImage3D,
   jb: _glUniform1i,
@@ -9841,7 +9847,7 @@ var wasmImports = {
   _a: _glfwGetJoystickButtons,
   Za: _glfwGetJoystickDeviceId,
   Ya: _glfwGetJoystickHats,
-  I: _glfwGetJoystickParam,
+  J: _glfwGetJoystickParam,
   Xa: _glfwGetJoystickPos,
   Wa: _glfwGetKey,
   h: _glfwGetMouseButton,
@@ -9868,7 +9874,7 @@ var wasmImports = {
   Ea: _glfwSetWindowIconifyCallback,
   Da: _glfwSetWindowSize,
   Ca: _glfwSetWindowSizeCallback,
-  H: _glfwShowKeyboard,
+  I: _glfwShowKeyboard,
   Ba: _glfwSwapBuffers,
   $: _glfwSwapInterval,
   Aa: _glfwTerminate,
@@ -9877,7 +9883,7 @@ var wasmImports = {
   P: invoke_iiii,
   va: invoke_ji,
   ua: invoke_jii,
-  G: invoke_vi,
+  H: invoke_vi,
   u: invoke_vii,
   _: invoke_viii,
   e: invoke_viiii,
