@@ -2,6 +2,7 @@
 title = hyper_trails
 version = 1.2.0
 write_log = 0
+minimum_log_level = 1
 compress_archive = 1
 publisher = unnamed
 developer = unnamed
@@ -61,6 +62,8 @@ max_font_batches = 128
 max_debug_vertices = 10000
 texture_profiles = /demo/assets/graphics/demo.texture_profiles
 verify_graphics_calls = 1
+opengl_version_hint = 33
+opengl_core_profile_hint = true
 memory_size = 512
 
 [shader]
