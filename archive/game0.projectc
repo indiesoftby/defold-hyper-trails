@@ -25,7 +25,7 @@ display_device_info = 0
 clear_color_red = 0
 clear_color_green = 0
 clear_color_blue = 0
-clear_color_alpha = 0
+clear_color_alpha = 1
 
 [physics]
 type = 2D
