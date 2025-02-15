@@ -132,7 +132,7 @@ localizations = en
 [android]
 version_code = 1
 minimum_sdk_version = 19
-target_sdk_version = 34
+target_sdk_version = 35
 package = com.example.todo
 gcm_sender_id = 
 manifest = /builtins/manifests/android/AndroidManifest.xml
@@ -170,6 +170,7 @@ show_fullscreen_button = 1
 show_made_with_defold = 1
 show_console_banner = 1
 scale_mode = fit
+transparent_graphics_context = 0
 
 [particle_fx]
 max_count = 64
