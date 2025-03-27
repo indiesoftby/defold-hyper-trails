@@ -5,9 +5,7 @@ on:
   push:
     branches:
       - master
-  schedule:
-    # nightly at 05:00 on the 1st and 15th
-    - cron: 0 5 1,15 * *
+  pull_request:
 
 jobs:
   build-and-deploy:
@@ -42,3 +40,4 @@ jobs:
         with:
           branch: gh-pages
           folder: build/bundle/js-web/hyper_trails
+        if: github.ref == 'refs/heads/master'
