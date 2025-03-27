@@ -25,6 +25,7 @@ game_binding = /demo/input/game.input_bindingc
 [physics]
 scale = 0.01
 gravity_y = -300.0
+velocity_threshold = 100.0
 
 [graphics]
 texture_profiles = /demo/assets/graphics/demo.texture_profiles
