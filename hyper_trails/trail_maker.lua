@@ -47,6 +47,13 @@ function M.encode_data_to_buffers(self)
 	end
 	faststream.set_table_raw(self.vertex_position_stream, positions)
 	faststream.set_table_raw(self.vertex_tint_stream, tints)
+
+	if not self.mesh_buffer_resource then
+		unique_buffer_id = unique_buffer_id + 1
+		local buffer_path = "/hyper_trails/trail_mesh_" .. unique_buffer_id .. ".bufferc"
+		self.mesh_buffer_resource = resource.create_buffer(buffer_path, { buffer = self.mesh_buffer })
+		go.set(self.trail_mesh_url, "vertices", self.mesh_buffer_resource)
+	end
 end
 
 function M.fade_tail(self, dt, data_arr, data_from)
@@ -174,13 +181,8 @@ function M.init_buffers(self)
 
 	if self.mesh_buffer_resource then
 		resource.release(self.mesh_buffer_resource)
+		self.mesh_buffer_resource = nil
 	end
-
-	unique_buffer_id = unique_buffer_id + 1
-	local buffer_path = "/hyper_trails/trail_mesh_" .. unique_buffer_id .. ".bufferc"
-
-	self.mesh_buffer_resource = resource.create_buffer(buffer_path, { buffer = self.mesh_buffer })
-	go.set(self.trail_mesh_url, "vertices", self.mesh_buffer_resource)
 
 	self.vertex_position_stream = buffer.get_stream(self.mesh_buffer, "position")
 	self.vertex_texcoord_stream = buffer.get_stream(self.mesh_buffer, "texcoord0")
