@@ -1,0 +1,30 @@
+It's a library made for the Defold game engine. The Defold engine is a 2D game engine, but it can also be used to make 3D games. It uses Lua 5.1 as its scripting language with "bit" module for bitwise operations. Developers write Lua code in the files with ".lua", ".script", ".gui_script", ".render_script", ".editor_script" extensions. Source code is formatted with tabs (4 spaces width) for indentation. "snake_case" is used for variable, function, file, folder names. It uses LDoc for documentation.
+
+The example of LDoc is:
+```lua
+--- Component init function
+---@param self script_instance
+---@param callback function Callback(self, value) on value changed
+---@param template string The template string name
+---@param nodes table Nodes table from gui.clone_tree
+function M.init(self, callback, template, nodes) end
+
+--- Format string with new text params on localized text
+---@param self druid.lang_text @{LangText}
+---@param a string Optional param to string.format
+---@param b string Optional param to string.format
+---@param c string Optional param to string.format
+---@param d string Optional param to string.format
+---@param e string Optional param to string.format
+---@param f string Optional param to string.format
+---@param g string Optional param to string.format
+---@return druid.lang_text Current instance
+function druid__lang_text.format(self, a, b, c, d, e, f, g) end
+```
+
+Structure of the project:
+```
+project_root/
+├── hyper_trails/ - folder with the library code
+├── demo/ - folder with the demo project
+```
