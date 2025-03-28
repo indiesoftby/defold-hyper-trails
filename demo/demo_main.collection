@@ -24,6 +24,18 @@ embedded_instances {
   "    z: -0.5\n"
   "  }\n"
   "}\n"
+  "embedded_components {\n"
+  "  id: \"factory_object\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/demo/example_factory_object.go\\\"\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"factory_trail\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/demo/example_factory_trail.go\\\"\\n"
+  "\"\n"
+  "}\n"
   ""
   position {
     x: 480.0
@@ -135,7 +147,7 @@ embedded_instances {
   "\"\n"
   "  position {\n"
   "    x: 181.0\n"
-  "    y: 293.0\n"
+  "    y: 243.0\n"
   "  }\n"
   "}\n"
   "embedded_components {\n"
@@ -158,6 +170,27 @@ embedded_instances {
   "  position {\n"
   "    x: 758.0\n"
   "    y: 447.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"factory\"\n"
+  "  type: \"label\"\n"
+  "  data: \"size {\\n"
+  "  x: 128.0\\n"
+  "  y: 32.0\\n"
+  "}\\n"
+  "outline {\\n"
+  "  y: 0.4\\n"
+  "  z: 0.8\\n"
+  "}\\n"
+  "line_break: true\\n"
+  "text: \\\"Spawning from factory\\\"\\n"
+  "font: \\\"/demo/assets/fonts/vera_small.font\\\"\\n"
+  "material: \\\"/builtins/fonts/label.material\\\"\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 181.0\n"
+  "    y: 392.8517\n"
   "  }\n"
   "}\n"
   ""
@@ -186,7 +219,7 @@ embedded_instances {
   ""
   position {
     x: 181.0
-    y: 322.0
+    y: 272.0
   }
 }
 embedded_instances {

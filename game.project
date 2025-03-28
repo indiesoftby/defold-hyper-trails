@@ -26,6 +26,7 @@ game_binding = /demo/input/game.input_bindingc
 scale = 0.01
 gravity_y = -300.0
 velocity_threshold = 100.0
+max_collision_object_count = 1024
 
 [graphics]
 texture_profiles = /demo/assets/graphics/demo.texture_profiles
@@ -36,4 +37,14 @@ output_spirv = 1
 [html5]
 scale_mode = fit
 cssfile = /builtins/manifests/web/dark_theme.css
+heap_size = 64
+
+[sprite]
+max_count = 1024
+
+[mesh]
+max_count = 1024
+
+[engine]
+max_time_step = 0.05
 

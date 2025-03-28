@@ -1,0 +1,27 @@
+embedded_components {
+  id: "collisionobject"
+  type: "collisionobject"
+  data: "collision_shape: \"/demo/assets/images/logo_small.convexshape\"\n"
+  "type: COLLISION_OBJECT_TYPE_DYNAMIC\n"
+  "mass: 1.0\n"
+  "friction: 0.1\n"
+  "restitution: 0.75\n"
+  "group: \"default\"\n"
+  "mask: \"skip\"\n"
+  ""
+}
+embedded_components {
+  id: "sprite"
+  type: "sprite"
+  data: "default_animation: \"logo_small\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
+  "size {\n"
+  "  x: 32.0\n"
+  "  y: 32.0\n"
+  "}\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/demo/assets/atlases/main.atlas\"\n"
+  "}\n"
+  ""
+}
