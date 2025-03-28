@@ -39,7 +39,7 @@ var CUSTOM_PARAMETERS = {
         return ("archive" + path + "");
     },
     engine_arguments: ["--verify-graphics-calls=false",],
-    custom_heap_size: 268435456,
+    custom_heap_size: 67108864,
     full_screen_container: "#canvas-container",
     disable_context_menu: true,
     retry_time:1.0,

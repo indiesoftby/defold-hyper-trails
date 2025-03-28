@@ -29,7 +29,7 @@ clear_color_alpha = 1
 
 [physics]
 type = 2D
-max_collision_object_count = 128
+max_collision_object_count = 1024
 use_fixed_timestep = 0
 gravity_y = -300.0
 debug = 0
@@ -46,7 +46,7 @@ contact_impulse_limit = 0
 ray_cast_limit_2d = 64
 ray_cast_limit_3d = 128
 trigger_overlap_capacity = 16
-velocity_threshold = 1
+velocity_threshold = 100.0
 max_fixed_timesteps = 2
 
 [bootstrap]
@@ -91,7 +91,7 @@ game_binding = /demo/input/game.input_bindingc
 use_accelerometer = 1
 
 [sprite]
-max_count = 128
+max_count = 1024
 subpixels = 1
 
 [model]
@@ -99,7 +99,7 @@ max_count = 128
 split_meshes = 0
 
 [mesh]
-max_count = 128
+max_count = 1024
 
 [gui]
 max_count = 64
@@ -160,7 +160,7 @@ app_icon =
 
 [html5]
 custom_heap_size = 0
-heap_size = 256
+heap_size = 64
 htmlfile = /builtins/manifests/web/engine_template.html
 cssfile = /builtins/manifests/web/dark_theme.css
 archive_location_prefix = archive
@@ -210,5 +210,5 @@ max_tile_count = 2048
 [engine]
 run_while_iconified = 0
 fixed_update_frequency = 60
-max_time_step = 0.5
+max_time_step = 0.05
 
