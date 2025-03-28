@@ -17,16 +17,22 @@ local EMPTY_TABLE = {}
 local VECTOR3_EMPTY = vmath.vector3()
 local VECTOR3_ONE = vmath.vector3(1)
 
--- Based on https://forum.defold.com/t/delay-when-using-draw-line-in-update/68695/2
+--- Queue late update for trail rendering
+--- Based on https://forum.defold.com/t/delay-when-using-draw-line-in-update/68695/2
 function M.queue_late_update()
+	-- DEPRECATED <!!!> the hack is not needed anymore, hasn't worked since Defold 1.2.196
 	physics.raycast_async(VECTOR3_EMPTY, VECTOR3_ONE, EMPTY_TABLE) 
 end
 
+--- Draw the trail by encoding data to buffers and updating UV options
+---@param self table Script instance
 function M.draw_trail(self)
 	M.encode_data_to_buffers(self)
 	M.update_uv_opts(self)
 end
 
+--- Encode trail data into mesh buffers
+---@param self table Script instance
 function M.encode_data_to_buffers(self)
 	local trail_point_position = vmath.vector3()
 	local offset_by_float = 1
@@ -56,6 +62,11 @@ function M.encode_data_to_buffers(self)
 	end
 end
 
+--- Fade the tail of the trail by decreasing the alpha value of the tail points
+---@param self table Script instance
+---@param dt number Delta time
+---@param data_arr table Array of trail point data
+---@param data_from number Starting index for fading
 function M.fade_tail(self, dt, data_arr, data_from)
 	local m = math.min(data_from + self.fade_tail_alpha - 1, self._data_w)
 	local j = 0
@@ -68,6 +79,9 @@ function M.fade_tail(self, dt, data_arr, data_from)
 	end
 end
 
+--- Update trail position and properties based on object movement
+---@param self table Script instance
+---@param dt number Delta time
 function M.follow_position(self, dt)
 	local data_arr = self._data
 
@@ -136,10 +150,17 @@ function M.follow_position(self, dt)
 	end
 end
 
+--- Get the two points at the head of the trail
+---@param self table Script instance
+---@return table Previous head point
+---@return table Current head point
 function M.get_head_data_points(self)
 	return self._data[self._data_w - 1], self._data[self._data_w]
 end
 
+--- Get current position of the trail object
+---@param self table Script instance
+---@return vector3 Current position
 function M.get_position(self)
 	if self.use_world_position then
 		local pos = go.get_world_position()
@@ -152,6 +173,8 @@ function M.get_position(self)
 	end
 end
 
+--- Initialize trail data points
+---@param self table Script instance
 function M.init_data_points(self)
 	self._data = {}
 
@@ -172,6 +195,8 @@ function M.init_data_points(self)
 	end
 end
 
+--- Initialize mesh buffers for trail rendering
+---@param self table Script instance
 function M.init_buffers(self)
 	self.mesh_buffer = buffer.create(self.points_count * 2, {
 		{ name = hash("position"), type = buffer.VALUE_TYPE_FLOAT32, count = 3 },
@@ -191,7 +216,6 @@ function M.init_buffers(self)
 	local texcoord = {}
 	for rev_index = self.points_count, 1, -1 do
 		local new_y = (rev_index - 1)/(self.points_count - 1)
-		local forw_index = self.points_count - rev_index + 1
 		table.insert(texcoord, 1)
 		table.insert(texcoord, new_y)
 		table.insert(texcoord, 0)
@@ -200,27 +224,39 @@ function M.init_buffers(self)
 	faststream.set_table_universal(self.vertex_texcoord_stream, texcoord)
 end
 
+--- Clean up resources on script destruction
+---@param self table Script instance
 function M.final(self)
 	if self.mesh_buffer_resource then
 		resource.release(self.mesh_buffer_resource)
 	end
 end
 
+--- Initialize trail properties
+---@param self table Script instance
 function M.init_props(self)
 	if self.points_limit > self.points_count then
 		self.points_limit = self.points_count
 	end
 end
 
+--- Initialize internal variables
+---@param self table Script instance
 function M.init_vars(self)
 	self._data_w = self.points_count
 	self._last_pos = M.get_position(self)
 end
 
+--- Calculate angle from position difference
+---@param diff_pos vector3 Position difference vector
+---@return number angle Angle in radians
 function M.make_angle(diff_pos)
 	return math.atan2(-diff_pos.y, -diff_pos.x)
 end
 
+--- Generate perpendicular vectors for trail width based on angle
+---@param self table Script instance
+---@param row table Trail point data row
 function M.make_vectors_from_angle(self, row)
 	local a = row.angle - math.pi / 2
 	local w = row.width / 2
@@ -242,6 +278,10 @@ function M.make_vectors_from_angle(self, row)
 	-- end
 end
 
+--- Fill with zeros unused trail points
+---@param self table Script instance
+---@param data_arr table Array of trail point data
+---@param data_from number Starting index for unused points
 function M.pull_not_used_points(self, data_arr, data_from)
 	local last_point = data_arr[data_from]
 	last_point.dpos.x = 0
@@ -257,6 +297,11 @@ function M.pull_not_used_points(self, data_arr, data_from)
 	end
 end
 
+--- Shrink trail length over time
+---@param self table Script instance
+---@param dt number Delta time
+---@param data_arr table Array of trail point data
+---@param data_from number Starting index for shrinking
 function M.shrink_length(self, dt, data_arr, data_from)
 	local to_shrink = self.shrink_length_per_sec * dt
 	for i = data_from + 1, self._data_w - 1 do
@@ -276,6 +321,12 @@ function M.shrink_length(self, dt, data_arr, data_from)
 	end
 end
 
+--- Shrink trail width from head to tail
+---@param self table Script instance
+---@param dt number Delta time
+---@param data_from number Starting index
+---@param data_arr table Array of trail point data
+---@param data_limit number Maximum points to process
 function M.shrink_width(self, dt, data_from, data_arr, data_limit)
 	local j = 1
 	for i = data_from, self._data_w do
@@ -285,6 +336,8 @@ function M.shrink_width(self, dt, data_from, data_arr, data_limit)
 	end
 end
 
+--- Split trail segments that exceed maximum length
+---@param self table Script instance
 function M.split_segments_by_length(self)
 	if not (self.segment_length_max > 0) then
 		return
@@ -321,7 +374,8 @@ function M.split_segments_by_length(self)
 	end
 end
 
--- uv_opts.x - repeat texture count, yzw - unused
+--- Update UV options for trail texture
+---@param self table Script instance
 function M.update_uv_opts(self)
 	local uv_opts = vmath.vector4(0)
 	
@@ -330,6 +384,7 @@ function M.update_uv_opts(self)
 	else
 		uv_opts.x = 1
 	end
+	-- uv_opts.x - repeat texture count, yzw - unused
 	go.set(self.trail_mesh_url, "uv_opts", uv_opts)
 end
 
