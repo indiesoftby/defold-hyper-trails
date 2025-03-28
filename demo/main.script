@@ -1,7 +1,17 @@
+local function spawn_objects_with_trails(self)
+	local scale = vmath.vector3(0.5)
+	local position = vmath.vector3(181, 423, 0)
+	local obj_id = factory.create("#factory_object", position, nil, nil, scale)
+	msg.post(obj_id, "apply_force", { force = vmath.vector3((math.random() - 0.5) * 10000, (math.random() + 0.5) * 10000, 0), position = position })
+	factory.create("#factory_trail", position, nil, { follow_object_id = obj_id }, scale)
+end
+
 function init(self)
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
 
 	msg.post(".", "acquire_input_focus")
+
+	timer.delay(0.05, true, spawn_objects_with_trails)
 end
 
 function final(self)
