@@ -8,7 +8,6 @@ shared_state = 1
 width = 960
 height = 540
 high_dpi = 1
-samples = 4
 update_frequency = 60
 
 [project]
@@ -29,7 +28,7 @@ velocity_threshold = 100.0
 max_collision_object_count = 1024
 
 [graphics]
-texture_profiles = /demo/assets/graphics/demo.texture_profiles
+texture_profiles = /demo/mipmaps.texture_profiles
 
 [shader]
 output_spirv = 1

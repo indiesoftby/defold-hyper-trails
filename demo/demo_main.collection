@@ -24,18 +24,6 @@ embedded_instances {
   "    z: -0.5\n"
   "  }\n"
   "}\n"
-  "embedded_components {\n"
-  "  id: \"factory_object\"\n"
-  "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/demo/example_factory_object.go\\\"\\n"
-  "\"\n"
-  "}\n"
-  "embedded_components {\n"
-  "  id: \"factory_trail\"\n"
-  "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/demo/example_factory_trail.go\\\"\\n"
-  "\"\n"
-  "}\n"
   ""
   position {
     x: 480.0
@@ -682,4 +670,24 @@ embedded_instances {
     x: 681.0
     y: 120.0
   }
+}
+embedded_instances {
+  id: "trails_from_factory"
+  data: "components {\n"
+  "  id: \"example\"\n"
+  "  component: \"/demo/trails_from_factory/example.script\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"factory_object\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/demo/trails_from_factory/object.go\\\"\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"factory_trail\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/demo/trails_from_factory/trail.go\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
 }

@@ -1,5 +1,7 @@
 local trail_maker = require("hyper_trails.trail_maker")
 
+go.property("follow_object_id", hash(""))
+go.property("absolute_position", false)
 go.property("use_world_position", false)
 go.property("trail_width", 20)
 go.property("trail_tint_color", vmath.vector4(1.0, 1.0, 1.0, 1.0))
@@ -14,11 +16,23 @@ go.property("texture_tiling", true)
 go.property("trail_mesh_url", msg.url("#trail_mesh"))
 go.property("auto_update", true)
 
+local EMPTY_HASH = hash("")
+local UPDATE = hash("update")
+local RESET = hash("reset")
+
+local function update_position(self)
+	if self.follow_object_id ~= EMPTY_HASH and not self.absolute_position then
+		local obj_pos = go.get_position(self.follow_object_id)
+		go.set_position(obj_pos)
+	end
+end
+
 local function reset_trail(self)
 	trail_maker.init_vars(self)
 	trail_maker.init_buffers(self)
 	trail_maker.init_props(self)
 	trail_maker.init_data_points(self)
+	update_position(self)
 	trail_maker.draw_trail(self)
 end
 
@@ -28,6 +42,7 @@ end
 
 local function update_trail(self, dt)
 	trail_maker.follow_position(self, self.dt)
+	update_position(self)
 	trail_maker.draw_trail(self)
 end
 
@@ -37,9 +52,6 @@ function update(self, dt)
 		update_trail(self, dt)
 	end
 end
-
-local UPDATE = hash("update")
-local RESET = hash("reset")
 
 function on_message(self, message_id, message, sender)
 	if message_id == UPDATE then
