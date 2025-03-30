@@ -6,21 +6,13 @@ vertex_space: VERTEX_SPACE_LOCAL
 vertex_constants {
   name: "world_view_proj"
   type: CONSTANT_TYPE_WORLDVIEWPROJ
-  value {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 0.0
-  }
 }
 vertex_constants {
   name: "uv_opts"
   type: CONSTANT_TYPE_USER
   value {
     x: 1.0
-    y: 0.0
     z: 1.0
-    w: 0.0
   }
 }
 samplers {
@@ -29,5 +21,4 @@ samplers {
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
-  max_anisotropy: 1.0
 }

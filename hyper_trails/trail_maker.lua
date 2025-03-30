@@ -13,6 +13,7 @@ local M = {}
 -- We use this module-scope variable to make buffer IDs unique.
 local unique_buffer_id = 0
 
+local EMPTY_HASH = hash("")
 local EMPTY_TABLE = {}
 local VECTOR3_EMPTY = vmath.vector3()
 local VECTOR3_ONE = vmath.vector3(1)
@@ -38,10 +39,15 @@ function M.encode_data_to_buffers(self)
 	local offset_by_float = 1
 	local positions = {}
 	local tints = {}
+	local absolute_position = self.absolute_position
 	for i = self._data_w, 1, -1 do 
 		local point_data = self._data[i]
 		local vertex_up   = trail_point_position + point_data.v_1
 		local vertex_down = trail_point_position + point_data.v_2
+		if absolute_position then
+			vertex_up = vertex_up + self._last_pos
+			vertex_down = vertex_down + self._last_pos
+		end
 		positions[offset_by_float + 0] = vertex_up
 		positions[offset_by_float + 1] = vertex_down
 
@@ -162,14 +168,15 @@ end
 ---@param self table Script instance
 ---@return vector3 Current position
 function M.get_position(self)
+	local id = self.follow_object_id == EMPTY_HASH and "." or self.follow_object_id
 	if self.use_world_position then
-		local pos = go.get_world_position()
-		local scale = go.get_world_scale()
+		local pos = go.get_world_position(id)
+		local scale = go.get_world_scale(id)
 		pos.x = pos.x / scale.x
 		pos.y = pos.y / scale.y
 		return pos
 	else
-		return go.get_position()
+		return go.get_position(id)
 	end
 end
 
