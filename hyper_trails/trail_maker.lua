@@ -1,7 +1,24 @@
 --
 -- Helper functions for trail_maker.script
 --
--- 'self' is trail_maker.script instance
+-- 'self' is trail_maker.script instance or table of parameters (see `trails_from_factory` example script).
+--
+-- Properties:
+--
+-- * follow_object_id (hash) - ID of the game object to follow. If empty, uses the current object.
+-- * absolute_position (bool) - If true, trail points are positioned relative to the last position of the object.
+-- * use_world_position (bool) - If true, uses world position instead of local position for the followed object.
+-- * trail_width (number) - Width of the trail in pixels.
+-- * trail_tint_color (vector4) - Color and alpha of the trail (RGBA).
+-- * segment_length_max (number) - Maximum length of a trail segment. If > 0, segments exceeding this length will be split.
+-- * segment_length_min (number) - Minimum length of a trail segment. If > 0, segments shorter than this will be merged.
+-- * points_count (number) - Total number of points in the trail.
+-- * points_limit (number) - Maximum number of visible points (0 = all points visible).
+-- * fade_tail_alpha (number) - Number of points to fade at the tail (0 = no fading).
+-- * shrink_tail_width (bool) - If true, trail width decreases from head to tail.
+-- * shrink_length_per_sec (number) - Rate at which the trail length shrinks per second (0 = no shrinking).
+-- * texture_tiling (bool) - If true, texture repeats along the trail; if false, texture stretches.
+-- * trail_mesh_url (hash) - URL to the mesh component used for rendering the trail.
 --
 
 local M = {}

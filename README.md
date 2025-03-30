@@ -25,6 +25,7 @@ Using it in your 2D game is simple:
 
 1. Add the components `/hyper_trails/trail_maker.script` and `/hyper_trails/models/trail_mesh.mesh` to your game object.
 2. Run your game and move the game object. Enjoy!
+3. Look at the `demo/demo_main.collection` for examples of how to use Hyper Trails. `trails_from_factory` is a good example of how to use the asset from code using a single controller script.
 
 ## Example App
 
@@ -36,21 +37,23 @@ See the demo game.project for examples of how to use Hyper Trails on its own.
 
 ![Terminology](docs/trail.png)
 
-`trail_maker.script`'s options:
+Available options:
 
-* `use_world_position` (boolean) - Calculate object movement delta using `go.get_position` or `go.get_world_position`.
-* `trail_width` (number)
-* `trail_tint_color` (vector4)
-* `segment_length_max` (number)
-* `segment_length_min` (number)
-* `points_count` (number) - any number.
-* `points_limit` (number) - Set 0 to use all points (deprecated).
-* `fade_tail_alpha` (number)
-* `shrink_tail_width` (boolean)
-* `shrink_length_per_sec` (number)
-* `texture_tiling` (boolean)
-* `trail_model_url` (url)
-* `auto_update` (boolean) - Uncheck this and send the `update` message to the script instance to manually update the trail.
+* `follow_object_id` <kbd>hash</kbd> - ID of the game object to follow. If empty, uses the current object.
+* `absolute_position` <kbd>bool</kbd> - Default is `false`, i.e. we assume that the object with the trail has the same position as the followed object. If true, trail vertices in the mesh buffer are positioned relative to the last position of the object.
+* `use_world_position` <kbd>bool</kbd> - Default is `false`. If true, uses world position instead of local position for the followed object.
+* `trail_width` <kbd>number</kbd> - Width of the trail in pixels.
+* `trail_tint_color` <kbd>vector4</kbd> - Color and alpha of the trail (RGBA).
+* `segment_length_max` <kbd>number</kbd> - Maximum length of a trail segment. If > 0, segments exceeding this length will be split.
+* `segment_length_min` <kbd>number</kbd> - Minimum length of a trail segment. If > 0, segments shorter than this will be merged.
+* `points_count` <kbd>number</kbd> - Total number of points in the trail.
+* `points_limit` <kbd>number</kbd> - Maximum number of visible points (0 = all points visible). DEPRECATED.
+* `fade_tail_alpha` <kbd>number</kbd> - Number of points to fade at the tail (0 = no fading).
+* `shrink_tail_width` <kbd>bool</kbd> - If true, trail width decreases from head to tail.
+* `shrink_length_per_sec` <kbd>number</kbd> - Rate at which the trail length shrinks per second (0 = no shrinking).
+* `texture_tiling` <kbd>bool</kbd> - If true, texture repeats along the trail; if false, texture stretches.
+* `trail_mesh_url` <kbd>hash</kbd> - URL to the mesh component used for rendering the trail.
+* *(only for trail_maker.script)* `auto_update` <kbd>bool</kbd> - Uncheck this and send the `update` message to the script instance to manually update the trail.
 
 Change mesh's `texture0` to draw custom texture on the trail.
 
@@ -65,9 +68,11 @@ Defold now has such [the update order](https://forum.defold.com/t/go-set-positio
 
 ![Physics Update Order Problem](docs/update_order_physics.png)
 
-**Tip:** You can disable the `Auto Update` property for the trail maker instance and check the ` demo/demo_physics.script` how to manually send `update` message to the trail maker script.
+> [!TIP]
+> You can disable the `Auto Update` property for the trail maker instance and check the ` demo/demo_physics.script` how to manually send `update` message to the trail maker script.
 
-**Note:** vote for [https://github.com/defold/defold/issues/7277](the issue).
+> [!IMPORTANT]
+> Vote for [https://github.com/defold/defold/issues/7277](the issue).
 
 ## Credits
 
