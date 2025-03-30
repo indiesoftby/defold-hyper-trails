@@ -1,19 +1,34 @@
 local trail_maker = require("hyper_trails.trail_maker")
 
+-- ID of the game object to follow. If empty, uses the current object.
 go.property("follow_object_id", hash(""))
+-- If true, trail points are positioned relative to the last position of the object.
 go.property("absolute_position", false)
+-- If true, uses world position instead of local position for the followed object.
 go.property("use_world_position", false)
+-- Width of the trail in pixels.
 go.property("trail_width", 20)
+-- Color and alpha of the trail (RGBA)
 go.property("trail_tint_color", vmath.vector4(1.0, 1.0, 1.0, 1.0))
+-- Maximum length of a trail segment. If > 0, segments exceeding this length will be split.
 go.property("segment_length_max", 0)
+-- Minimum length of a trail segment. If > 0, segments shorter than this will be merged.
 go.property("segment_length_min", 0)
+-- Total number of points in the trail.
 go.property("points_count", 16)
+-- Maximum number of visible points (0 = all points visible). DEPRECATED.
 go.property("points_limit", 0)
+-- Number of points to fade at the tail (0 = no fading).
 go.property("fade_tail_alpha", 0)
+-- If true, trail width decreases from head to tail.
 go.property("shrink_tail_width", false)
+-- Rate at which the trail length shrinks per second (0 = no shrinking).
 go.property("shrink_length_per_sec", 0)
+-- If true, texture repeats along the trail; if false, texture stretches.
 go.property("texture_tiling", true)
+-- URL to the mesh component used for rendering the trail.
 go.property("trail_mesh_url", msg.url("#trail_mesh"))
+-- If true, trail updates automatically in update(); if false, requires manual update messages. Used only by trail_maker.script.
 go.property("auto_update", true)
 
 local EMPTY_HASH = hash("")
