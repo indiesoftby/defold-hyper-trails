@@ -30,6 +30,9 @@ local M = {}
 -- We use this module-scope variable to make buffer IDs unique.
 local unique_buffer_id = 0
 
+-- Warnings
+local zero_scale_warned = false
+
 local EMPTY_HASH = hash("")
 local EMPTY_TABLE = {}
 local VECTOR3_EMPTY = vmath.vector3()
@@ -189,6 +192,13 @@ function M.get_position(self)
 	if self.use_world_position then
 		local pos = go.get_world_position(id)
 		local scale = go.get_world_scale(id)
+		if scale.x == 0 or scale.y == 0 then
+			if not zero_scale_warned then
+				zero_scale_warned = true
+				print("trail_maker.lua: Warning <!> The object has zero scale. This causes issues with trail rendering. The warning appears only once.")
+			end
+			return vmath.vector3(0)
+		end
 		pos.x = pos.x / scale.x
 		pos.y = pos.y / scale.y
 		return pos
