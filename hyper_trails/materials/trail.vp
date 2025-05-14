@@ -1,15 +1,21 @@
-attribute highp vec3 position;
-attribute mediump vec2 texcoord0;
-attribute lowp vec4 tint;
+#version 140
 
-uniform mediump vec4 uv_opts;
-uniform highp mat4 world_view_proj;
+in vec3 position;
+in vec2 texcoord0;
+in vec4 tint;
 
-varying mediump vec2 var_texcoord0;
-varying lowp vec4 var_tint;
+uniform vp_uniforms
+{
+    mat4 world_view_proj;
+    vec4 uv_opts;
+};
+
+out mediump vec2 var_texcoord0;
+out mediump vec4 var_tint;
 
 void main() {
-    var_tint = tint;
+    // Pre-multiply alpha since all runtime textures already are
+    var_tint = vec4(tint.xyz * tint.w, tint.w);
     var_texcoord0 = vec2(texcoord0.x, texcoord0.y * uv_opts.x);
     gl_Position = world_view_proj * vec4(position, 1.0);
 }

@@ -1,11 +1,13 @@
-varying lowp vec4 var_tint;
-varying mediump vec2 var_texcoord0;
+#version 140
+
+in mediump vec2 var_texcoord0;
+in mediump vec4 var_tint;
 
 uniform lowp sampler2D texture0;
 
+out lowp vec4 frag_color;
+
 void main()
 {
-    // Pre-multiply alpha since all runtime textures already are
-    lowp vec4 tint_pm = vec4(var_tint.xyz * var_tint.w, var_tint.w);
-    gl_FragColor = texture2D(texture0, var_texcoord0.xy) * tint_pm;
+    frag_color = texture(texture0, var_texcoord0.xy) * var_tint;
 }
