@@ -14,9 +14,11 @@ Feel free to ask questions: [the topic about this asset is on the Defold forum](
 
 ## Installation
 
-You can use **Hyper Trails** in your own project by adding this project as a [Defold library dependency](http://www.defold.com/manuals/libraries/). Open your `game.project` file and add the links in the dependencies field under project:
+You can use **Hyper Trails** in your own project by adding this project as a [Defold library dependency](http://www.defold.com/manuals/libraries/). Open your `game.project` file and add the link to the Hyper Trails dependency to your project:
 
 * https://github.com/indiesoftby/defold-hyper-trails/archive/master.zip (or point to the ZIP file of a [specific release](https://github.com/indiesoftby/defold-hyper-trails/releases))
+
+**Important!** Faststream dependency is also required:
 * https://github.com/KorolevSoftware/defold-faststream/archive/main.zip
 
 ## Usage
